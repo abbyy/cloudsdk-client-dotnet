@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net472;net461;net45;netstandard2.0</TargetFrameworks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <LangVersion>7.1</LangVersion>
+    <Version>1.0.1</Version>
+    <AssemblyName>Abbyy.CloudSdk.Client</AssemblyName>
+    <RootNamespace>Abbyy.CloudSdk.Client</RootNamespace>
+    <Description>ABBYY Cloud OCR SDK allows to recognize printed text (OCR) and hand-printed text (ICR) on images, convert image-only documents to searchable PDF or editable Microsoft Office formats, extract data from receipts, business cards and IDs through the simple HTTP API.
+
+This .NET library provides classes and methods to access ABBYY Cloud OCR SDK API endpoints.
+    </Description>
+    <PackageProjectUrl>https://ocrsdk.com/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/abbyysdk/cloudsdk-client-dotnet/</RepositoryUrl>
+    <PackageIconUrl>https://www.abbyy.com/images/aol_icons/128.png</PackageIconUrl>
+    <PackageLicenseUrl>https://github.com/abbyysdk/cloudsdk-client-dotnet/blob/master/LICENSE</PackageLicenseUrl>
+    <Copyright>Copyright 2019 ABBYY LLC</Copyright>
+    <Authors>ABBYY LLC</Authors>
+    <Company>ABBYY LLC</Company>
+    <PackageTags>ocr icr recognition image pdf processing ABBYY</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net472' OR '$(TargetFramework)' == 'net461' OR '$(TargetFramework)' == 'net45'">
+    <Reference Include="System.Web" />
+    <PackageReference Include="Microsoft.Net.Http" Version="2.2.29" />
+  </ItemGroup>
+
+</Project>

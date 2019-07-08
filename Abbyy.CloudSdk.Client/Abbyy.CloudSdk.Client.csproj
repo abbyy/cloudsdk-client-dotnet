@@ -21,13 +21,22 @@ This .NET library provides classes and methods to access ABBYY Cloud OCR SDK API
     <PackageTags>ocr icr recognition image pdf processing ABBYY</PackageTags>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.3'">
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.1" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.0'">
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net472' OR '$(TargetFramework)' == 'net461' OR '$(TargetFramework)' == 'net45'">
     <Reference Include="System.Web" />
     <PackageReference Include="Microsoft.Net.Http" Version="2.2.29" />
+    <PackageReference Include="Newtonsoft.Json" Version="6.0.8" />
   </ItemGroup>
 
 </Project>

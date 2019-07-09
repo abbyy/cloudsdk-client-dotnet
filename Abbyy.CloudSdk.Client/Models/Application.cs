@@ -23,9 +23,9 @@ namespace Abbyy.CloudSdk.Client.Models
 	public sealed class Application
 	{
 		/// <summary>
-		/// Application Name
+		/// Application Id
 		/// </summary>
-		public string Name { get; set; }
+		public string Id { get; set; }
 
 		/// <summary>
 		/// The number of pages remained for processing

@@ -65,7 +65,7 @@ foreach (var resultUrl in taskInfo.ResultUrls)
 }
 ```
 
-Investigate the whole sample in [Sample folder](Abbyy.CloudSdk.Client.Sample).
+Investigate the whole sample in [Sample folder](Abbyy.CloudSdk.V2.Client.Sample).
 
 ## License
 Copyright © 2019 ABBYY Production LLC

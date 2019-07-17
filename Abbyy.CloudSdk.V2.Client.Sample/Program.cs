@@ -18,7 +18,10 @@ using Abbyy.CloudSdk.V2.Client.Models.RequestParams;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Threading.Tasks;
+using Abbyy.CloudSdk.V2.Client.Sample.RetryPolicySample;
+using BusinessCardExportFormat = Abbyy.CloudSdk.V2.Client.Models.Enums.BusinessCardExportFormat;
 
 namespace Abbyy.CloudSdk.V2.Client.Sample
 {
@@ -27,6 +30,7 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 		private const string ApplicationId = "YOUR_APP_ID";
 		private const string Password = "YOUR_APP_PWD";
 		private const string FilePath = "YOUR_FILE_PATH";
+		private const string HostUrl = "https://cloud-westus.ocrsdk.com";
 
 		private static AuthInfo _authInfo;
 
@@ -34,7 +38,7 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 	    {
 		    _authInfo = new AuthInfo
 		    {
-			    Host = "https://cloud-westus.ocrsdk.com",
+			    Host = HostUrl,
 			    ApplicationId = ApplicationId,
 			    Password = Password,
 		    };
@@ -45,7 +49,14 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 			{
 				Console.WriteLine(resultUrl);
 			}
-	    }
+
+			resultUrls = await RetryPolicyForSpecificErrorStatusCodeAsync();
+
+			foreach (var resultUrl in resultUrls)
+			{
+				Console.WriteLine(resultUrl);
+			}
+		}
 
 	    private static async Task<List<string>> ProcessImageAsync()
 	    {
@@ -57,6 +68,46 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 
 		    using (var fileStream = new FileStream(FilePath, FileMode.Open))
 		    using (var client = new OcrClient(_authInfo))
+			{
+				var taskInfo = await client.ProcessImageAsync(
+					imageParams,
+					fileStream,
+					Path.GetFileName(FilePath),
+					waitTaskFinished: true);
+
+				return taskInfo.ResultUrls;
+			}
+	    }
+
+	    private static async Task<List<string>> RetryPolicyForSpecificErrorStatusCodeAsync()
+	    {
+		    int retryCount = 3;
+			var millisecondsDelay = 3000;
+
+			var imageParams = new ImageProcessingParams
+			{
+				ExportFormats = new[] { ExportFormat.Docx, ExportFormat.Txt, },
+				Language = "English,French",
+			};
+
+
+			var policyBehaviourHttpClient =
+			    new PolicyBehaviourHttpClientBuilder(_authInfo)
+				    .AddRetryPolicyForSpecificErrorStatusCode(HttpStatusCode.BadGateway, retryCount, millisecondsDelay,
+					    (exception, calculatedWaitDuration, retries, context) =>
+					    {
+						    Console.WriteLine($"Retry {retries} for policy with key {context.PolicyKey}");
+					    })
+
+				    .AddRetryPolicyWhenException(retryCount, millisecondsDelay,
+					    (exception, calculatedWaitDuration, retries, context) =>
+					    {
+						    Console.WriteLine($"Retry {retries} for policy with key {context.PolicyKey} - exception: {exception.Message}");
+					    })
+					;
+
+			using (var fileStream = new FileStream(FilePath, FileMode.Open))
+			using (var client = new PolicyBehaviourOcrClient(policyBehaviourHttpClient.Build()))
 			{
 				var taskInfo = await client.ProcessImageAsync(
 					imageParams,

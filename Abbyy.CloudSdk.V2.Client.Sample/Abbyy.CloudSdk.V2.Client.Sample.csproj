@@ -36,6 +36,9 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Polly, Version=7.0.0.0, Culture=neutral, PublicKeyToken=c8a3ffc3f8f825cc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Polly.7.1.0\lib\netstandard2.0\Polly.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -48,12 +51,18 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RetryPolicySample\PolicyBehaviourHttpClientHandler.cs" />
+    <Compile Include="RetryPolicySample\PolicyBehaviourOcrClient.cs" />
+    <Compile Include="RetryPolicySample\PolicyBehaviourOcrHttpClientBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Abbyy.CloudSdk.V2.Client\Abbyy.CloudSdk.V2.Client.csproj">
       <Project>{0385E00D-C746-4002-803B-9D96E5D7C077}</Project>
       <Name>Abbyy.CloudSdk.V2.Client</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

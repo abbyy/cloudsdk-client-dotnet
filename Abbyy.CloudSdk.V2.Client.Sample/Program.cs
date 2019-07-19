@@ -12,16 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Abbyy.CloudSdk.V2.Client.Models;
-using Abbyy.CloudSdk.V2.Client.Models.Enums;
-using Abbyy.CloudSdk.V2.Client.Models.RequestParams;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
+using Abbyy.CloudSdk.V2.Client.Models;
+using Abbyy.CloudSdk.V2.Client.Models.Enums;
+using Abbyy.CloudSdk.V2.Client.Models.RequestParams;
 using Abbyy.CloudSdk.V2.Client.Sample.RetryPolicySample;
-using BusinessCardExportFormat = Abbyy.CloudSdk.V2.Client.Models.Enums.BusinessCardExportFormat;
+using Polly;
 
 namespace Abbyy.CloudSdk.V2.Client.Sample
 {
@@ -34,89 +35,84 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 
 		private static AuthInfo _authInfo;
 
-	    public static async Task Main()
-	    {
-		    _authInfo = new AuthInfo
-		    {
-			    Host = HostUrl,
-			    ApplicationId = ApplicationId,
-			    Password = Password,
-		    };
-
+		public static async Task Main()
+		{
+			_authInfo = new AuthInfo
+			{
+				Host = HostUrl,
+				ApplicationId = ApplicationId,
+				Password = Password
+			};
+			
 			var resultUrls = await ProcessImageAsync();
-
 			foreach (var resultUrl in resultUrls)
-			{
 				Console.WriteLine(resultUrl);
-			}
 
-			resultUrls = await RetryPolicyForSpecificErrorStatusCodeAsync();
+			var finishedTasks = await GetFinishedTasksWithRetry();
+			foreach (var finishedTask in finishedTasks.Tasks)
+				Console.WriteLine(finishedTask.TaskId);
+		}
 
-			foreach (var resultUrl in resultUrls)
+		private static async Task<List<string>> ProcessImageAsync()
+		{
+			var imageParams = new ImageProcessingParams
 			{
-				Console.WriteLine(resultUrl);
+				ExportFormats = new[] {ExportFormat.Docx, ExportFormat.Txt},
+				Language = "English,French"
+			};
+
+			using (var fileStream = new FileStream(FilePath, FileMode.Open))
+			using (var client = new OcrClient(_authInfo))
+			{
+				var taskInfo = await client.ProcessImageAsync(
+					imageParams,
+					fileStream,
+					Path.GetFileName(FilePath),
+					waitTaskFinished: true);
+
+				return taskInfo.ResultUrls;
 			}
 		}
 
-	    private static async Task<List<string>> ProcessImageAsync()
-	    {
-		    var imageParams = new ImageProcessingParams
-		    {
-			    ExportFormats = new[] { ExportFormat.Docx, ExportFormat.Txt, },
-			    Language = "English,French",
-			};
-
-		    using (var fileStream = new FileStream(FilePath, FileMode.Open))
-		    using (var client = new OcrClient(_authInfo))
-			{
-				var taskInfo = await client.ProcessImageAsync(
-					imageParams,
-					fileStream,
-					Path.GetFileName(FilePath),
-					waitTaskFinished: true);
-
-				return taskInfo.ResultUrls;
-			}
-	    }
-
-	    private static async Task<List<string>> RetryPolicyForSpecificErrorStatusCodeAsync()
-	    {
-		    int retryCount = 3;
+		private static async Task<TaskList> GetFinishedTasksWithRetry()
+		{
+			var retryCount = 3;
 			var millisecondsDelay = 3000;
 
-			var imageParams = new ImageProcessingParams
+			IAsyncPolicy<HttpResponseMessage>[] retryPolicies =
 			{
-				ExportFormats = new[] { ExportFormat.Docx, ExportFormat.Txt, },
-				Language = "English,French",
+				Policy
+					.HandleResult<HttpResponseMessage>(result => result.StatusCode == HttpStatusCode.GatewayTimeout)
+					.WaitAndRetryAsync(
+						retryCount,
+						sleepDurationProvider => TimeSpan.FromMilliseconds(millisecondsDelay),
+						onRetry: (exception, calculatedWaitDuration, retries, context) =>
+						{
+							Console.WriteLine($"Retry {retries} for policy with key {context.PolicyKey}");
+						}
+					)
+					.WithPolicyKey("WaitAndRetryAsync_For_GatewayTimeout_504__StatusCode")
 			};
 
+			// Here it is necessary to take into account the maximum delay time of the policies,
+			// so that the request does not expire on timeout earlier than it should
+			var delayForRetry = millisecondsDelay * retryCount;
 
-			var policyBehaviourHttpClient =
-			    new PolicyBehaviourHttpClientBuilder(_authInfo)
-				    .AddRetryPolicyForSpecificErrorStatusCode(HttpStatusCode.BadGateway, retryCount, millisecondsDelay,
-					    (exception, calculatedWaitDuration, retries, context) =>
-					    {
-						    Console.WriteLine($"Retry {retries} for policy with key {context.PolicyKey}");
-					    })
-
-				    .AddRetryPolicyWhenException(retryCount, millisecondsDelay,
-					    (exception, calculatedWaitDuration, retries, context) =>
-					    {
-						    Console.WriteLine($"Retry {retries} for policy with key {context.PolicyKey} - exception: {exception.Message}");
-					    })
-					;
-
-			using (var fileStream = new FileStream(FilePath, FileMode.Open))
-			using (var client = new PolicyBehaviourOcrClient(policyBehaviourHttpClient.Build()))
+			using (var httpClientHandlerWithRetry = new HttpClientHandlerWithRetry(_authInfo, retryPolicies))
+			using (var httpClient = new HttpClientWithRetry(_authInfo, httpClientHandlerWithRetry, delayForRetry))
+			using (var client = new OcrClientWithRetry(httpClient))
 			{
-				var taskInfo = await client.ProcessImageAsync(
-					imageParams,
-					fileStream,
-					Path.GetFileName(FilePath),
-					waitTaskFinished: true);
-
-				return taskInfo.ResultUrls;
+				try
+				{
+					var finishedTasks = await client.ListFinishedTasksAsync();
+					return finishedTasks;
+				}
+				catch (Exception ex)
+				{
+					Console.WriteLine(ex);
+					return new TaskList();
+				}
 			}
-	    }
+		}
 	}
 }

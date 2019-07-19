@@ -8,11 +8,11 @@ using Polly;
 
 namespace Abbyy.CloudSdk.V2.Client.Sample.RetryPolicySample
 {
-	public class PolicyBehaviourHttpClientHandler : HttpClientHandler
+	public class HttpClientHandlerWithRetry : HttpClientHandler
 	{
-		private readonly IAsyncPolicy _policyWrapper;
+		private readonly IAsyncPolicy<HttpResponseMessage> _policyWrapper;
 
-		public PolicyBehaviourHttpClientHandler(AuthInfo authInfo, IAsyncPolicy[] policies) : base()
+		public HttpClientHandlerWithRetry(AuthInfo authInfo, IAsyncPolicy<HttpResponseMessage>[] policies)
 		{
 			if (authInfo == null) throw new ArgumentNullException(nameof(authInfo));
 
@@ -22,25 +22,17 @@ namespace Abbyy.CloudSdk.V2.Client.Sample.RetryPolicySample
 			_policyWrapper = WrapOrSingleAsync(policies);
 		}
 
-        
 		protected override async Task<HttpResponseMessage> SendAsync(
 			HttpRequestMessage request,
 			CancellationToken ct)
 		{
 			return
-                this._policyWrapper != null
-	                ? await this._policyWrapper.ExecuteAsync(async () => await this.CallBaseSendAsync(request, ct))
-					: await this.CallBaseSendAsync(request, ct);
+				_policyWrapper != null
+					? await _policyWrapper.ExecuteAsync(async () => await base.SendAsync(request, ct))
+					: await base.SendAsync(request, ct);
 		}
 
-		protected virtual async Task<HttpResponseMessage> CallBaseSendAsync(
-			HttpRequestMessage request,
-			CancellationToken ct)
-		{
-			return await base.SendAsync(request, ct);
-		}
-
-		private IAsyncPolicy WrapOrSingleAsync(IAsyncPolicy[] policies)
+		private IAsyncPolicy<HttpResponseMessage> WrapOrSingleAsync(IAsyncPolicy<HttpResponseMessage>[] policies)
 		{
 			switch (policies.Length)
 			{

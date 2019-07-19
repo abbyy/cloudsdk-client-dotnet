@@ -51,9 +51,9 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RetryPolicySample\PolicyBehaviourHttpClientHandler.cs" />
-    <Compile Include="RetryPolicySample\PolicyBehaviourOcrClient.cs" />
-    <Compile Include="RetryPolicySample\PolicyBehaviourOcrHttpClientBuilder.cs" />
+    <Compile Include="RetryPolicySample\HttpClientHandlerWithRetry.cs" />
+    <Compile Include="RetryPolicySample\HttpClientWithRetry.cs" />
+    <Compile Include="RetryPolicySample\OcrClientWithRetry.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Abbyy.CloudSdk.V2.Client\Abbyy.CloudSdk.V2.Client.csproj">

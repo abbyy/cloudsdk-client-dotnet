@@ -55,5 +55,10 @@
       <Name>Abbyy.CloudSdk.V2.Client</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="New Image.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

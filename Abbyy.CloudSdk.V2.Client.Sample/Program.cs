@@ -24,20 +24,25 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 {
 	public class Program
 	{
-		private const string ApplicationId = "YOUR_APP_ID";
-		private const string Password = "YOUR_APP_PWD";
-		private const string FilePath = "YOUR_FILE_PATH";
+		private const string ApplicationId = "PASTE_Application_ID";
+		private const string Password = "PAST_Application_Password";
+		private const string FilePath = "New Image.jpg";
+
+		/// <summary>
+		/// Processing Location URL https://www.ocrsdk.com/documentation/specifications/data-processing-location/
+		/// </summary>
+		private const string ServiceUrl = "https://cloud-eu.ocrsdk.com";
 
 		private static AuthInfo _authInfo;
 
-	    public static async Task Main()
-	    {
-		    _authInfo = new AuthInfo
-		    {
-			    Host = "https://cloud-westus.ocrsdk.com",
-			    ApplicationId = ApplicationId,
-			    Password = Password,
-		    };
+		public static async Task Main()
+		{
+			_authInfo = new AuthInfo
+			{
+				Host = ServiceUrl,
+				ApplicationId = ApplicationId,
+				Password = Password,
+			};
 
 			var resultUrls = await ProcessImageAsync();
 
@@ -45,18 +50,19 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 			{
 				Console.WriteLine(resultUrl);
 			}
-	    }
+		}
 
-	    private static async Task<List<string>> ProcessImageAsync()
-	    {
-		    var imageParams = new ImageProcessingParams
-		    {
-			    ExportFormats = new[] { ExportFormat.Docx, ExportFormat.Txt, },
-			    Language = "English,French",
+		private static async Task<List<string>> ProcessImageAsync()
+		{
+			var imageParams = new ImageProcessingParams
+			{
+				ExportFormats = new[] { ExportFormat.Docx, ExportFormat.Txt, },
+				Language = "English,French",
+			
 			};
 
-		    using (var fileStream = new FileStream(FilePath, FileMode.Open))
-		    using (var client = new OcrClient(_authInfo))
+			using (var client = new OcrClient(_authInfo))
+			using (var fileStream = new FileStream(FilePath, FileMode.Open))
 			{
 				var taskInfo = await client.ProcessImageAsync(
 					imageParams,
@@ -66,6 +72,6 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 
 				return taskInfo.ResultUrls;
 			}
-	    }
+		}
 	}
 }

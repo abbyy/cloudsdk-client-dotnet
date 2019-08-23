@@ -29,19 +29,22 @@ namespace Abbyy.CloudSdk.V2.Client.Sample.Core
 {
 	public class Program
 	{
-		private const string ApplicationId = "YOUR_APP_ID";
-		private const string Password = "YOUR_APP_PWD";
-		private const string FilePath = "YOUR_FILE_PATH";
-		private const string HostUrl = "https://cloud-westus.ocrsdk.com";
+		private const string ApplicationId = "PASTE_Application_ID";
+		private const string Password = "PAST_Application_Password";
+		private const string FilePath = "New Image.jpg";
 
-		private static readonly int _retryCount = 3;
-		private static readonly int _delayBetweenRetriesInSeconds = 3;
-		private static readonly string _httpClientName = "OCR_HTTP_CLIENT";
+		/// <summary>
+		/// Processing Location URL https://www.ocrsdk.com/documentation/specifications/data-processing-location/
+		/// </summary>
+		private const string ServiceUrl = "https://cloud-eu.ocrsdk.com";
 
+		private static int _retryCount = 3;
+		private static int _delayBetweenRetriesInSeconds = 3;
+		private static string _httpClientName = "OCR_HTTP_CLIENT";
 
 		private static readonly AuthInfo _authInfo = new AuthInfo
 		{
-			Host = HostUrl,
+			Host = ServiceUrl,
 			ApplicationId = ApplicationId,
 			Password = Password
 		};

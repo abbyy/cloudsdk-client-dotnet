@@ -79,7 +79,7 @@ namespace Abbyy.CloudSdk.V2.Client.Sample.Core
 			services.AddHttpClient(_httpClientName, conf =>
 				{
 					conf.BaseAddress = new Uri(_authInfo.Host);
-					//increase the default value of timeout for for the duration of retries
+					//increase the default value of timeout for the duration of retries
 					conf.Timeout = conf.Timeout + TimeSpan.FromSeconds(_retryCount * _delayBetweenRetriesInSeconds);
 				})
 				.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler

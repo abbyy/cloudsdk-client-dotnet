@@ -25,7 +25,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Polly;
 using Polly.Extensions.Http;
 
-namespace Abbyy.CloudSdk.V2.Client.Sample
+namespace Abbyy.CloudSdk.V2.Client.Sample.Core
 {
 	public class Program
 	{
@@ -34,10 +34,10 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 		private const string FilePath = "YOUR_FILE_PATH";
 		private const string HostUrl = "https://cloud-westus.ocrsdk.com";
 
+		private static readonly int _retryCount = 3;
+		private static readonly int _delayBetweenRetriesInSeconds = 3;
+		private static readonly string _httpClientName = "OCR_HTTP_CLIENT";
 
-		private static int _retryCount = 3;
-		private static int _delayBetweenRetriesInSeconds = 3;
-		private static string _httpClientName = "OCR_HTTP_CLIENT";
 
 		private static readonly AuthInfo _authInfo = new AuthInfo
 		{
@@ -60,9 +60,9 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 			_httpClient = httpClientFactory.CreateClient(_httpClientName);
 
 			//Run examples
-			//var resultUrls = await ProcessImageAsync();
-			//foreach (var resultUrl in resultUrls)
-			//	Console.WriteLine(resultUrl);
+			var resultUrls = await ProcessImageAsync();
+			foreach (var resultUrl in resultUrls)
+				Console.WriteLine(resultUrl);
 
 			var finishedTasks = await GetFinishedTasksWithRetry();
 			foreach (var finishedTask in finishedTasks.Tasks)
@@ -70,7 +70,7 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 
 			DisposeServices();
 		}
-		
+
 		private static ServiceCollection ConfigureServices()
 		{
 			var services = new ServiceCollection();
@@ -87,11 +87,8 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 					PreAuthenticate = true,
 					Credentials = new NetworkCredential(_authInfo.ApplicationId, _authInfo.Password)
 				})
-				//Add  custom HttpClientRetryPolicyHandler with polly
-				.AddHttpMessageHandler(() => new HttpClientRetryPolicyHandler(GetRetryPolicy()));
-
-				//or you can use Microsoft.Extensions.DependencyInjection Polly extension
-				//.AddPolicyHandler(GetRetryPolicy());
+				//add polly
+				.AddPolicyHandler(GetRetryPolicy());
 			return services;
 		}
 
@@ -126,7 +123,7 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 					imageParams,
 					fileStream,
 					Path.GetFileName(FilePath),
-					waitTaskFinished: true);
+					true);
 
 				return taskInfo.ResultUrls;
 			}
@@ -144,7 +141,7 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 
 		private static void DisposeServices()
 		{
-			(_serviceProvider as IDisposable)?.Dispose();
+			_serviceProvider?.Dispose();
 		}
 	}
 }

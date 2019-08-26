@@ -38,14 +38,20 @@ Provide your authentication info:
 ```
 var authInfo = new AuthInfo
          {
-             Host = "https://cloud-westus.ocrsdk.com",
+             Host = "https://<PROCESSING_LOCATION_ID>.ocrsdk.com",
              ApplicationId = ApplicationId,
              Password = Password,
          };
 ```
 
-Set the processing and result options:
+Create the main OcrClient object:
+
+```cs
+var client = new OcrClient(authInfo))
 ```
+
+Set the processing and result options (you can find all the settings [here](https://www.ocrsdk.com/documentation/api-reference/process-image-method/):
+```cs
 var imageParams = new ImageProcessingParams
         {
             ExportFormats = new[] { ExportFormat.Docx, ExportFormat.Txt, },
@@ -54,17 +60,12 @@ var imageParams = new ImageProcessingParams
 ```
 
 Open file as stream:
-```
+```cs
 var fileStream = new FileStream(FilePath, FileMode.Open))
 ```
 
-Create the main OcrClient object:
-```
-var client = new OcrClient(authInfo))
-```
-
 Pass the parameters to a new task. Set `waitTaskFinished` flag to **true** to wait for the results in current method. If `waitTaskFinished` is false, the task will be processed asynchronous.
-```
+```cs
 var taskInfo = await client.ProcessImageAsync(
     imageParams,
     fileStream,
@@ -72,15 +73,15 @@ var taskInfo = await client.ProcessImageAsync(
     waitTaskFinished: true);
 ```
 
-Display the result:
-```
+Display the URL addresses of the result documents:
+```cs
 foreach (var resultUrl in taskInfo.ResultUrls)
 {
     Console.WriteLine(resultUrl);
 }
 ```
 
-Investigate the whole sample in [Sample folder](https://).
+Investigate the whole sample in [Sample folder](Abbyy.CloudSdk.V2.Client.Sample).
 
 ## Supported export formats
 

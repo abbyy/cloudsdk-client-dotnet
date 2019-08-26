@@ -63,9 +63,9 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 			_httpClient = httpClientFactory.CreateClient(_httpClientName);
 
 			//Run examples
-			//var resultUrls = await ProcessImageAsync();
-			//foreach (var resultUrl in resultUrls)
-			//	Console.WriteLine(resultUrl);
+			var resultUrls = await ProcessImageAsync();
+			foreach (var resultUrl in resultUrls)
+				Console.WriteLine(resultUrl);
 
 			var finishedTasks = await GetFinishedTasksWithRetry();
 			foreach (var finishedTask in finishedTasks.Tasks)

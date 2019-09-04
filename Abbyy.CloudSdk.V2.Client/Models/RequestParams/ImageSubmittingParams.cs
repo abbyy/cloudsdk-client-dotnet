@@ -24,7 +24,7 @@ namespace Abbyy.CloudSdk.V2.Client.Models.RequestParams
 		/// <summary>
 		/// Optional. Specifies the identifier of the task. If the task with the specified identifier does not exist or has been deleted, an error is returned.
 		/// </summary>
-		public Guid TaskId { get; set; }
+		public Guid? TaskId { get; set; }
 
 		/// <summary>
 		/// Contains a password for accessing password-protected images in PDF format.

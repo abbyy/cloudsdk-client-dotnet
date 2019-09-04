@@ -43,8 +43,16 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 				ApplicationId = ApplicationId,
 				Password = Password,
 			};
+			var ocrClient = new OcrClient(_authInfo);
 
-			var resultUrls = await ProcessImageAsync();
+			var resultUrls = await ProcessImageAsync(ocrClient);
+
+			foreach (var resultUrl in resultUrls)
+			{
+				Console.WriteLine(resultUrl);
+			}
+
+			resultUrls = await ProcessDocumentAsync(ocrClient);
 
 			foreach (var resultUrl in resultUrls)
 			{
@@ -52,19 +60,17 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 			}
 		}
 
-		private static async Task<List<string>> ProcessImageAsync()
+		private static async Task<List<string>> ProcessImageAsync(IOcrClient ocrClient)
 		{
 			var imageParams = new ImageProcessingParams
 			{
 				ExportFormats = new[] { ExportFormat.Docx, ExportFormat.Txt, },
 				Language = "English,French",
-			
 			};
 
-			using (var client = new OcrClient(_authInfo))
 			using (var fileStream = new FileStream(FilePath, FileMode.Open))
 			{
-				var taskInfo = await client.ProcessImageAsync(
+				var taskInfo = await ocrClient.ProcessImageAsync(
 					imageParams,
 					fileStream,
 					Path.GetFileName(FilePath),
@@ -72,6 +78,50 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 
 				return taskInfo.ResultUrls;
 			}
+		}
+
+		private static async Task<List<string>> ProcessDocumentAsync(IOcrClient ocrClient)
+		{
+			Guid taskId = await UploadFilesAsync(ocrClient);
+
+			var processingParams = new DocumentProcessingParams
+			{
+				ExportFormats = new[] {ExportFormat.Docx, ExportFormat.Txt,},
+				Language = "English,French",
+				TaskId = taskId,
+			};
+
+			var taskInfo = await ocrClient.ProcessDocumentAsync(processingParams, waitTaskFinished: true);
+
+			return taskInfo.ResultUrls;
+		}
+
+		private static async Task<Guid> UploadFilesAsync(IOcrClient ocrClient)
+		{
+			ImageSubmittingParams submitParams;
+
+			// First file
+			using (var fileStream = new FileStream(FilePath, FileMode.Open))
+			{
+				var submitImageResult = await ocrClient.SubmitImageAsync(
+					null,
+					fileStream,
+					Path.GetFileName(FilePath));
+
+				// Save TaskId for next files and ProcessDocument method
+				submitParams = new ImageSubmittingParams { TaskId = submitImageResult.TaskId };
+			}
+
+			// Second file
+			using (var fileStream = new FileStream(FilePath, FileMode.Open))
+			{
+				await ocrClient.SubmitImageAsync(
+					submitParams,
+					fileStream,
+					Path.GetFileName(FilePath));
+			}
+
+			return submitParams.TaskId.Value;
 		}
 	}
 }

@@ -391,7 +391,7 @@ namespace Abbyy.CloudSdk.V2.Client
 						.ReadAsStringAsync()
 						.ConfigureAwait(false);
 
-				if (response.StatusCode == HttpStatusCode.OK)
+				if (response.IsSuccessStatusCode)
 				{
 					try
 					{

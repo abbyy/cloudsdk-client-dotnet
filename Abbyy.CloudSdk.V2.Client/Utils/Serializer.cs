@@ -19,7 +19,7 @@ using System.Reflection;
 using System.Web;
 using Newtonsoft.Json;
 
-namespace Abbyy.CloudSdk.V2.Client
+namespace Abbyy.CloudSdk.V2.Client.Utils
 {
 	public static class Serializer
 	{

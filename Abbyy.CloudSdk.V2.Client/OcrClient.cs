@@ -22,6 +22,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Abbyy.CloudSdk.V2.Client.Models;
 using Abbyy.CloudSdk.V2.Client.Models.RequestParams;
+using Abbyy.CloudSdk.V2.Client.Utils;
 using Newtonsoft.Json;
 
 namespace Abbyy.CloudSdk.V2.Client

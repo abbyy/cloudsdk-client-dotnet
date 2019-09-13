@@ -22,6 +22,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Abbyy.CloudSdk.V2.Client.Models;
 using Abbyy.CloudSdk.V2.Client.Models.RequestParams;
+using Abbyy.CloudSdk.V2.Client.Utils;
 using Newtonsoft.Json;
 
 namespace Abbyy.CloudSdk.V2.Client
@@ -51,7 +52,7 @@ namespace Abbyy.CloudSdk.V2.Client
 			};
 		}
 
-		protected OcrClient(HttpClient httpClient)
+		public OcrClient(HttpClient httpClient)
 		{
 			HttpClient = httpClient;
 		}
@@ -288,7 +289,7 @@ namespace Abbyy.CloudSdk.V2.Client
 				cancellationToken: cancellationToken);
 		}
 
-		protected async Task<T> MakeRequestAsync<T>(
+		protected virtual async Task<T> MakeRequestAsync<T>(
 			HttpMethod method,
 			string requestUrl,
 			object body = null,
@@ -307,7 +308,7 @@ namespace Abbyy.CloudSdk.V2.Client
 			}
 		}
 
-		private async Task<TaskInfo> StartTaskAsync(
+		protected virtual async Task<TaskInfo> StartTaskAsync(
 			HttpMethod method,
 			string requestUrl,
 			object body,
@@ -338,7 +339,7 @@ namespace Abbyy.CloudSdk.V2.Client
 			return task;
 		}
 
-		private HttpRequestMessage BuildRequest(
+		protected virtual HttpRequestMessage BuildRequest(
 			HttpMethod method,
 			string relativeUrl,
 			object body,
@@ -371,7 +372,7 @@ namespace Abbyy.CloudSdk.V2.Client
 			return request;
 		}
 
-		private async Task<T> ProcessResponseAsync<T>(HttpResponseMessage response)
+		protected virtual async Task<T> ProcessResponseAsync<T>(HttpResponseMessage response)
 		{
 			using (response)
 			{
@@ -416,7 +417,7 @@ namespace Abbyy.CloudSdk.V2.Client
 			}
 		}
 
-		private Error TryDeserializeError(string responseData)
+		protected virtual Error TryDeserializeError(string responseData)
 		{
 			try
 			{

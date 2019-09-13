@@ -21,7 +21,7 @@ using Newtonsoft.Json;
 
 namespace Abbyy.CloudSdk.V2.Client
 {
-	internal static class Serializer
+	public static class Serializer
 	{
 		public static string ToQueryString(object dto)
 		{

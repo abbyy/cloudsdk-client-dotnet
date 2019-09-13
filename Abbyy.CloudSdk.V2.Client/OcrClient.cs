@@ -51,7 +51,7 @@ namespace Abbyy.CloudSdk.V2.Client
 			};
 		}
 
-		protected OcrClient(HttpClient httpClient)
+		public OcrClient(HttpClient httpClient)
 		{
 			HttpClient = httpClient;
 		}

@@ -18,6 +18,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Abbyy.CloudSdk.V2.Client.Models;
@@ -46,9 +47,19 @@ namespace Abbyy.CloudSdk.V2.Client
 				PreAuthenticate = true,
 			};
 
+			var version = Assembly
+				.GetAssembly(typeof(OcrClient))
+				.GetName()
+				.Version
+				.ToString();
+
 			HttpClient = new HttpClient(handler)
 			{
 				BaseAddress = new Uri(authInfo.Host),
+				DefaultRequestHeaders =
+				{
+					{ "X-Version", $"C#/{version}" },
+				},
 			};
 		}
 

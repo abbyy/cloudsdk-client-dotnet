@@ -56,16 +56,16 @@ namespace Abbyy.CloudSdk.V2.Client
 			HttpClient = new HttpClient(handler)
 			{
 				BaseAddress = new Uri(authInfo.Host),
-				DefaultRequestHeaders =
-				{
-					{ "X-Version", $"C#/{Version}" },
-				},
 			};
+
+			AddUserAgentHeader(HttpClient);
 		}
 
 		public OcrClient(HttpClient httpClient)
 		{
 			HttpClient = httpClient;
+
+			AddUserAgentHeader(HttpClient);
 		}
 
 		/// <inheritdoc />
@@ -460,6 +460,13 @@ namespace Abbyy.CloudSdk.V2.Client
 			}
 
 			_disposed = true;
+		}
+
+		private void AddUserAgentHeader(HttpClient client)
+		{
+			client.DefaultRequestHeaders
+				.UserAgent
+				.Add(new ProductInfoHeaderValue("C#", Version));
 		}
 	}
 }

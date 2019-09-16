@@ -31,6 +31,12 @@ namespace Abbyy.CloudSdk.V2.Client
 	/// <inheritdoc />
 	public class OcrClient : IOcrClient
 	{
+		private static readonly string Version = Assembly
+			.GetAssembly(typeof(OcrClient))
+			.GetName()
+			.Version
+			.ToString();
+
 		protected readonly HttpClient HttpClient;
 
 		private bool _disposed;
@@ -47,18 +53,12 @@ namespace Abbyy.CloudSdk.V2.Client
 				PreAuthenticate = true,
 			};
 
-			var version = Assembly
-				.GetAssembly(typeof(OcrClient))
-				.GetName()
-				.Version
-				.ToString();
-
 			HttpClient = new HttpClient(handler)
 			{
 				BaseAddress = new Uri(authInfo.Host),
 				DefaultRequestHeaders =
 				{
-					{ "X-Version", $"C#/{version}" },
+					{ "X-Version", $"C#/{Version}" },
 				},
 			};
 		}

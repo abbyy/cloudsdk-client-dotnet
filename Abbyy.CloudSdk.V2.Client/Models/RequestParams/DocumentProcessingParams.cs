@@ -94,5 +94,30 @@ namespace Abbyy.CloudSdk.V2.Client.Models.RequestParams
 		/// to the result file.
 		/// </summary>
 		public bool? ReadBarcodes { get; set; }
+
+		/// <summary>
+		/// Optional. Default is <see cref="Enums.ImageSource.Auto"/>. Specifies the source of the image.
+		/// </summary>
+		public ImageSource? ImageSource { get; set; }
+
+		/// <summary>
+		/// Optional. Default "true". Specifies whether the orientation of the image should be automatically detected and corrected.
+		/// </summary>
+		/// <list type="bullet">
+		/// <item>
+		/// <term>true</term>
+		/// <description>The page orientation is automatically detected, and if it differs from normal the image is rotated.</description>
+		/// </item>
+		/// <item>
+		/// <term>false</term>
+		/// <description>The page orientation detection and correction is not performed.</description>
+		/// </item>
+		/// </list>
+		public bool? CorrectOrientation { get; set; }
+
+		/// <summary>
+		/// Optional. Default "true". Specifies whether the skew of the image should be automatically detected and corrected.
+		/// </summary>
+		public bool? CorrectSkew { get; set; }
 	}
 }

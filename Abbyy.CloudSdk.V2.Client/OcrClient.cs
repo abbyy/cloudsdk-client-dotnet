@@ -18,6 +18,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Abbyy.CloudSdk.V2.Client.Models;
@@ -30,6 +31,12 @@ namespace Abbyy.CloudSdk.V2.Client
 	/// <inheritdoc />
 	public class OcrClient : IOcrClient
 	{
+		private static readonly string Version = Assembly
+			.GetAssembly(typeof(OcrClient))
+			.GetName()
+			.Version
+			.ToString();
+
 		protected readonly HttpClient HttpClient;
 
 		private bool _disposed;
@@ -50,11 +57,15 @@ namespace Abbyy.CloudSdk.V2.Client
 			{
 				BaseAddress = new Uri(authInfo.Host),
 			};
+
+			AddUserAgentHeader(HttpClient);
 		}
 
 		public OcrClient(HttpClient httpClient)
 		{
 			HttpClient = httpClient;
+
+			AddUserAgentHeader(HttpClient);
 		}
 
 		/// <inheritdoc />
@@ -449,6 +460,13 @@ namespace Abbyy.CloudSdk.V2.Client
 			}
 
 			_disposed = true;
+		}
+
+		private void AddUserAgentHeader(HttpClient client)
+		{
+			client.DefaultRequestHeaders
+				.UserAgent
+				.Add(new ProductInfoHeaderValue("C#", Version));
 		}
 	}
 }

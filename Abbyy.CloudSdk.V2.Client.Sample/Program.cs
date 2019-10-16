@@ -53,7 +53,33 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 
 		public static async Task Main()
 		{
-			// Init library
+			// Init client
+			// You could also call GetOcrClient to use client without retry policy
+			using (var ocrClient = GetOcrClientWithRetryPolicy())
+			{
+				// Process image
+				// You could also call ProcessDocumentAsync or any other processing method declared below
+				var resultUrls = await ProcessImageAsync(ocrClient);
+
+				// Get results
+				foreach (var resultUrl in resultUrls)
+					Console.WriteLine(resultUrl);
+
+				var finishedTasks = await GetFinishedTasksWithRetry();
+				foreach (var finishedTask in finishedTasks.Tasks)
+					Console.WriteLine(finishedTask.TaskId);
+
+				DisposeServices();
+			}
+		}
+
+		private static IOcrClient GetOcrClient()
+		{
+			return new OcrClient(_authInfo);
+		}
+
+		private static IOcrClient GetOcrClientWithRetryPolicy()
+		{
 			// Create service collection and configure our services
 			var services = ConfigureServices();
 			// Generate a provider
@@ -62,16 +88,7 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 			var httpClientFactory = _serviceProvider.GetService<IHttpClientFactory>();
 			_httpClient = httpClientFactory.CreateClient(_httpClientName);
 
-			// Process image
-			// You could also call ProcessDocumentAsync or any other processing method declared below			var resultUrls = await ProcessImageAsync();			// Get results
-			foreach (var resultUrl in resultUrls)
-				Console.WriteLine(resultUrl);
-
-			var finishedTasks = await GetFinishedTasksWithRetry();
-			foreach (var finishedTask in finishedTasks.Tasks)
-				Console.WriteLine(finishedTask.TaskId);
-
-			DisposeServices();
+			return new OcrClient(_httpClient);
 		}
 		
 		private static ServiceCollection ConfigureServices()
@@ -114,7 +131,7 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 				.WithPolicyKey("WaitAndRetryAsync_For_GatewayTimeout_504__StatusCode");
 		}
 
-		private static async Task<List<string>> ProcessImageAsync()
+		private static async Task<List<string>> ProcessImageAsync(IOcrClient ocrClient)
 		{
 			var imageParams = new ImageProcessingParams
 			{
@@ -123,8 +140,7 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 			};
 			const string filePath = "New Image.jpg";
 
-			using (var fileStream = new FileStream(FilePath, FileMode.Open))
-			using (var client = new OcrClient(_authInfo))
+			using (var fileStream = new FileStream(filePath, FileMode.Open))
 			{
 				var taskInfo = await ocrClient.ProcessImageAsync(
 					imageParams,

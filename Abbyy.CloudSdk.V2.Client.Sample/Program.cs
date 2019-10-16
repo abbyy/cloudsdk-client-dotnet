@@ -41,7 +41,7 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 		private static int _delayBetweenRetriesInSeconds = 3;
 		private static string _httpClientName = "OCR_HTTP_CLIENT";
 
-		private static readonly AuthInfo _authInfo = new AuthInfo
+		private static readonly AuthInfo AuthInfo = new AuthInfo
 		{
 			Host = ServiceUrl,
 			ApplicationId = ApplicationId,
@@ -75,7 +75,7 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 
 		private static IOcrClient GetOcrClient()
 		{
-			return new OcrClient(_authInfo);
+			return new OcrClient(AuthInfo);
 		}
 
 		private static IOcrClient GetOcrClientWithRetryPolicy()
@@ -90,7 +90,7 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 
 			return new OcrClient(_httpClient);
 		}
-		
+
 		private static ServiceCollection ConfigureServices()
 		{
 			var services = new ServiceCollection();
@@ -98,24 +98,24 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 			//Configure HttpClientFactory with retry handler
 			services.AddHttpClient(_httpClientName, conf =>
 				{
-					conf.BaseAddress = new Uri(_authInfo.Host);
+					conf.BaseAddress = new Uri(AuthInfo.Host);
 					//increase the default value of timeout for the duration of retries
 					conf.Timeout = conf.Timeout + TimeSpan.FromSeconds(_retryCount * _delayBetweenRetriesInSeconds);
 				})
 				.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
 				{
 					PreAuthenticate = true,
-					Credentials = new NetworkCredential(_authInfo.ApplicationId, _authInfo.Password)
+					Credentials = new NetworkCredential(AuthInfo.ApplicationId, AuthInfo.Password)
 				})
 				//Add  custom HttpClientRetryPolicyHandler with polly
 				.AddHttpMessageHandler(() => new HttpClientRetryPolicyHandler(GetRetryPolicy()));
 
-				//or you can use Microsoft.Extensions.DependencyInjection Polly extension
-				//.AddPolicyHandler(GetRetryPolicy());
+			//or you can use Microsoft.Extensions.DependencyInjection Polly extension
+			//.AddPolicyHandler(GetRetryPolicy());
 			return services;
 		}
 
-		public static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+		private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
 		{
 			return HttpPolicyExtensions.HandleTransientHttpError()
 				//Condition - what kind of request errors should we repeat
@@ -135,7 +135,7 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 		{
 			var imageParams = new ImageProcessingParams
 			{
-				ExportFormats = new[] { ExportFormat.Docx, ExportFormat.Txt, },
+				ExportFormats = new[] {ExportFormat.Docx, ExportFormat.Txt,},
 				Language = "English,French",
 			};
 			const string filePath = "New Image.jpg";
@@ -154,7 +154,7 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 
 		private static async Task<List<string>> ProcessDocumentAsync(IOcrClient ocrClient)
 		{
-			Guid taskId = await UploadFilesAsync(ocrClient);
+			var taskId = await UploadFilesAsync(ocrClient);
 
 			var processingParams = new DocumentProcessingParams
 			{
@@ -163,7 +163,9 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 				TaskId = taskId,
 			};
 
-			var taskInfo = await ocrClient.ProcessDocumentAsync(processingParams, waitTaskFinished: true);
+			var taskInfo = await ocrClient.ProcessDocumentAsync(
+				processingParams,
+				waitTaskFinished: true);
 
 			return taskInfo.ResultUrls;
 		}
@@ -171,8 +173,8 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 		private static async Task<Guid> UploadFilesAsync(IOcrClient ocrClient)
 		{
 			ImageSubmittingParams submitParams;
-			string firstFilePath = "New Image.jpg";
-			string secondFilePath = "Picture_003.jpg";
+			var firstFilePath = "New Image.jpg";
+			var secondFilePath = "Picture_003.jpg";
 
 			// First file
 			using (var fileStream = new FileStream(firstFilePath, FileMode.Open))
@@ -183,7 +185,7 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 					Path.GetFileName(firstFilePath));
 
 				// Save TaskId for next files and ProcessDocument method
-				submitParams = new ImageSubmittingParams { TaskId = submitImageResult.TaskId };
+				submitParams = new ImageSubmittingParams {TaskId = submitImageResult.TaskId};
 			}
 
 			// Second file

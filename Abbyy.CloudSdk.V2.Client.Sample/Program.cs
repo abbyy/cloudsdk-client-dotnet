@@ -36,6 +36,7 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 
 		public static async Task Main()
 		{
+			// Init library
 			_authInfo = new AuthInfo
 			{
 				Host = ServiceUrl,
@@ -44,15 +45,11 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 			};
 			var ocrClient = new OcrClient(_authInfo);
 
+			// Process image
+			// You could also call ProcessDocumentAsync or any other processing method declared below
 			var resultUrls = await ProcessImageAsync(ocrClient);
 
-			foreach (var resultUrl in resultUrls)
-			{
-				Console.WriteLine(resultUrl);
-			}
-
-			resultUrls = await ProcessDocumentAsync(ocrClient);
-
+			// Get results
 			foreach (var resultUrl in resultUrls)
 			{
 				Console.WriteLine(resultUrl);

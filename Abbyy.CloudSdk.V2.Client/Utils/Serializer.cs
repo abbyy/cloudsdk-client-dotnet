@@ -19,9 +19,9 @@ using System.Reflection;
 using System.Web;
 using Newtonsoft.Json;
 
-namespace Abbyy.CloudSdk.V2.Client
+namespace Abbyy.CloudSdk.V2.Client.Utils
 {
-	internal static class Serializer
+	public static class Serializer
 	{
 		public static string ToQueryString(object dto)
 		{

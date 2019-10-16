@@ -29,9 +29,8 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 {
 	public class Program
 	{
-		private const string ApplicationId = "PASTE_Application_ID";
-		private const string Password = "PAST_Application_Password";
-		private const string FilePath = "New Image.jpg";
+		private const string ApplicationId = @"PASTE_Application_ID";
+		private const string Password = @"PAST_Application_Password";
 
 		/// <summary>
 		/// Processing Location URL https://www.ocrsdk.com/documentation/specifications/data-processing-location/
@@ -54,6 +53,7 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 
 		public static async Task Main()
 		{
+			// Init library
 			// Create service collection and configure our services
 			var services = ConfigureServices();
 			// Generate a provider
@@ -62,8 +62,8 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 			var httpClientFactory = _serviceProvider.GetService<IHttpClientFactory>();
 			_httpClient = httpClientFactory.CreateClient(_httpClientName);
 
-			//Run examples
-			var resultUrls = await ProcessImageAsync();
+			// Process image
+			// You could also call ProcessDocumentAsync or any other processing method declared below			var resultUrls = await ProcessImageAsync();			// Get results
 			foreach (var resultUrl in resultUrls)
 				Console.WriteLine(resultUrl);
 
@@ -118,21 +118,68 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 		{
 			var imageParams = new ImageProcessingParams
 			{
-				ExportFormats = new[] {ExportFormat.Docx, ExportFormat.Txt},
-				Language = "English,French"
+				ExportFormats = new[] { ExportFormat.Docx, ExportFormat.Txt, },
+				Language = "English,French",
 			};
+			const string filePath = "New Image.jpg";
 
 			using (var fileStream = new FileStream(FilePath, FileMode.Open))
 			using (var client = new OcrClient(_authInfo))
 			{
-				var taskInfo = await client.ProcessImageAsync(
+				var taskInfo = await ocrClient.ProcessImageAsync(
 					imageParams,
 					fileStream,
-					Path.GetFileName(FilePath),
+					Path.GetFileName(filePath),
 					waitTaskFinished: true);
 
 				return taskInfo.ResultUrls;
 			}
+		}
+
+		private static async Task<List<string>> ProcessDocumentAsync(IOcrClient ocrClient)
+		{
+			Guid taskId = await UploadFilesAsync(ocrClient);
+
+			var processingParams = new DocumentProcessingParams
+			{
+				ExportFormats = new[] {ExportFormat.Docx, ExportFormat.Txt,},
+				Language = "English,French",
+				TaskId = taskId,
+			};
+
+			var taskInfo = await ocrClient.ProcessDocumentAsync(processingParams, waitTaskFinished: true);
+
+			return taskInfo.ResultUrls;
+		}
+
+		private static async Task<Guid> UploadFilesAsync(IOcrClient ocrClient)
+		{
+			ImageSubmittingParams submitParams;
+			string firstFilePath = "New Image.jpg";
+			string secondFilePath = "Picture_003.jpg";
+
+			// First file
+			using (var fileStream = new FileStream(firstFilePath, FileMode.Open))
+			{
+				var submitImageResult = await ocrClient.SubmitImageAsync(
+					null,
+					fileStream,
+					Path.GetFileName(firstFilePath));
+
+				// Save TaskId for next files and ProcessDocument method
+				submitParams = new ImageSubmittingParams { TaskId = submitImageResult.TaskId };
+			}
+
+			// Second file
+			using (var fileStream = new FileStream(secondFilePath, FileMode.Open))
+			{
+				await ocrClient.SubmitImageAsync(
+					submitParams,
+					fileStream,
+					Path.GetFileName(secondFilePath));
+			}
+
+			return submitParams.TaskId.Value;
 		}
 
 		private static async Task<TaskList> GetFinishedTasksWithRetry()

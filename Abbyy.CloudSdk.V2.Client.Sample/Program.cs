@@ -65,7 +65,8 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 				foreach (var resultUrl in resultUrls)
 					Console.WriteLine(resultUrl);
 
-				var finishedTasks = await GetFinishedTasksWithRetry();
+				// Get list of finished tasks
+				var finishedTasks = await GetFinishedTasks(ocrClient);
 				foreach (var finishedTask in finishedTasks.Tasks)
 					Console.WriteLine(finishedTask.TaskId);
 
@@ -200,14 +201,10 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 			return submitParams.TaskId.Value;
 		}
 
-		private static async Task<TaskList> GetFinishedTasksWithRetry()
+		private static async Task<TaskList> GetFinishedTasks(IOcrClient ocrClient)
 		{
-			//here we use HttpClient with retry policy
-			using (var client = new OcrClient(_httpClient))
-			{
-				var finishedTasks = await client.ListFinishedTasksAsync();
-				return finishedTasks;
-			}
+			var finishedTasks = await ocrClient.ListFinishedTasksAsync();
+			return finishedTasks;
 		}
 
 		private static void DisposeServices()

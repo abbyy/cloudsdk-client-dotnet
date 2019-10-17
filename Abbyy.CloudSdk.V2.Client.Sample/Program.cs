@@ -66,7 +66,7 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 					Console.WriteLine(resultUrl);
 
 				// Get list of finished tasks
-				var finishedTasks = await GetFinishedTasks(ocrClient);
+				var finishedTasks = await GetFinishedTasksAsync(ocrClient);
 				foreach (var finishedTask in finishedTasks.Tasks)
 					Console.WriteLine(finishedTask.TaskId);
 
@@ -201,7 +201,7 @@ namespace Abbyy.CloudSdk.V2.Client.Sample
 			return submitParams.TaskId.Value;
 		}
 
-		private static async Task<TaskList> GetFinishedTasks(IOcrClient ocrClient)
+		private static async Task<TaskList> GetFinishedTasksAsync(IOcrClient ocrClient)
 		{
 			var finishedTasks = await ocrClient.ListFinishedTasksAsync();
 			return finishedTasks;

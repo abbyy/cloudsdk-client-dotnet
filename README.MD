@@ -32,7 +32,7 @@ To use the library in your project for image processing, do the following:
 3. Implement your application using ABBYY OCR and capturing technologies.
 
 ## Sample
-The sample demonstrates how to process image with the specified parameters and export the result using this client library. Start your developement with the following steps. 
+The [sample](https://github.com/abbyysdk/ocrsdk.com/tree/master/dotNet/Abbyy.CloudSdk.V2.Client.Sample) demonstrates how to process image with the specified parameters and export the result using this client library. Start your developement with the following steps. 
 
 Provide your authentication info and the HTTP server URL address, used for API calls (see [Data processing location](https://www.ocrsdk.com/documentation/specifications/data-processing-location/) for details)
 

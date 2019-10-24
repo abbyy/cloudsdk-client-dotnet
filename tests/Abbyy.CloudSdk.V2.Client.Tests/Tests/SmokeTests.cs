@@ -26,7 +26,7 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 			};
 
 			TaskInfo processImageTask;
-			using (var fileStream = GetImageStream(TestFile.Article))
+			using (var fileStream = GetResourceFileStream(TestFile.Article))
 			{
 				processImageTask = await ApiClient.ProcessImageAsync(
 					parameters,
@@ -87,7 +87,7 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 			};
 
 			TaskInfo processBusinessCardTask;
-			using (var fileStream = GetImageStream(TestFile.BusinessCard))
+			using (var fileStream = GetResourceFileStream(TestFile.BusinessCard))
 			{
 				processBusinessCardTask = await ApiClient.ProcessBusinessCardAsync(
 					parameters,
@@ -113,7 +113,7 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 			};
 
 			TaskInfo processTextFieldTask;
-			using (var fileStream = GetImageStream(TestFile.BusinessCard))
+			using (var fileStream = GetResourceFileStream(TestFile.BusinessCard))
 			{
 				processTextFieldTask = await ApiClient.ProcessTextFieldAsync(
 					parameters,
@@ -142,7 +142,7 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 			};
 
 			TaskInfo processBarcodeFieldTask;
-			using (var fileStream = GetImageStream(TestFile.Questionnaire))
+			using (var fileStream = GetResourceFileStream(TestFile.Questionnaire))
 			{
 				processBarcodeFieldTask = await ApiClient.ProcessBarcodeFieldAsync(
 					parameters,
@@ -168,7 +168,7 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 			};
 
 			TaskInfo processCheckmarkFieldTask;
-			using (var fileStream = GetImageStream(TestFile.Questionnaire))
+			using (var fileStream = GetResourceFileStream(TestFile.Questionnaire))
 			{
 				processCheckmarkFieldTask = await ApiClient.ProcessCheckmarkFieldAsync(
 					parameters,
@@ -184,6 +184,33 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 			processCheckmarkFieldTask.ResultUrls.Count.ShouldBe(1);
 		}
 
+		[Test]
+		public async Task ProcessFields_ShouldBeOk()
+		{
+			var submitImageTask = await SubmitImageAsync(TestFile.Questionnaire);
+			var parameters = new FieldsProcessingParams
+			{
+				TaskId = submitImageTask.TaskId,
+				WriteRecognitionVariants = true,
+			};
+
+			TaskInfo processFieldsTask;
+			using (var fileStream = GetResourceFileStream(TestFile.ProcessFieldsXmlConfig))
+			{
+				processFieldsTask = await ApiClient.ProcessFieldsAsync(
+					parameters,
+					fileStream,
+					TestFile.ProcessFieldsXmlConfig,
+					true
+				);
+			}
+
+			processFieldsTask.ShouldNotBeNull();
+			processFieldsTask.TaskId.ShouldBe(submitImageTask.TaskId);
+			processFieldsTask.Status.ShouldBe(TaskStatus.Completed);
+			processFieldsTask.ResultUrls.Count.ShouldBe(1);
+		}
+
 		private async Task<TaskInfo> SubmitImageAsync(string fileName, Guid? taskId = null)
 		{
 			var parameters = taskId.HasValue
@@ -191,7 +218,7 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 				: null;
 
 			TaskInfo submitImageTask;
-			using (var fileStream = GetImageStream(fileName))
+			using (var fileStream = GetResourceFileStream(fileName))
 			{
 				submitImageTask = await ApiClient.SubmitImageAsync(
 					parameters,
@@ -207,7 +234,7 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 			return submitImageTask;
 		}
 
-		private static FileStream GetImageStream(string fileName)
+		private static FileStream GetResourceFileStream(string fileName)
 		{
 			return File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
 		}

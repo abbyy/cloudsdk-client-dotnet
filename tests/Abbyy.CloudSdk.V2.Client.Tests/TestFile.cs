@@ -2,10 +2,11 @@ namespace Abbyy.CloudSdk.V2.Client.Tests
 {
 	public static class TestFile
 	{
-		private const string Prefix = "Images/";
+		private const string Prefix = "Resources/";
 
 		public const string Article = Prefix + "Article.jpg";
-		public const string Questionnaire = Prefix + "Questionnaire.pdf";
 		public const string BusinessCard = Prefix + "BusinessCard.tif";
+		public const string ProcessFieldsXmlConfig = Prefix + "ProcessFieldsXmlConfig.xml";
+		public const string Questionnaire = Prefix + "Questionnaire.pdf";
 	}
 }

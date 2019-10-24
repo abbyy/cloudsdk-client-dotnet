@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Abbyy.CloudSdk.V2.Client.Models;
 using Abbyy.CloudSdk.V2.Client.Models.Enums;
@@ -302,6 +303,53 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 			submitImageTask.Status.ShouldBe(TaskStatus.Submitted);
 			deletedTask.Status.ShouldBe(TaskStatus.Deleted);
 			resultTask.Status.ShouldBe(TaskStatus.Deleted);
+		}
+
+		[Test]
+		public async Task ListTasks_ShouldBeOk()
+		{
+			// Arrange
+			var submitImageTask = await SubmitImageAsync(TestFile.Article);
+			var parameters = new TasksListingParams
+			{
+				ExcludeDeleted = true,
+			};
+
+			// Act
+			var listTasks = await ApiClient.ListTasksAsync(
+				parameters
+			);
+
+			// Assert
+			listTasks.ShouldNotBeNull();
+			listTasks.Tasks.Count.ShouldBeGreaterThan(1);
+			listTasks.Tasks.FirstOrDefault(item => item.TaskId == submitImageTask.TaskId).ShouldNotBeNull();
+		}
+
+		[Test]
+		public async Task ListFinishedTasks_ShouldBeOk()
+		{
+			// Arrange
+			var submitImageTask = await SubmitImageAsync(TestFile.Article);
+
+			// Act
+			var listFinishedTasks = await ApiClient.ListFinishedTasksAsync();
+
+			// Assert
+			listFinishedTasks.ShouldNotBeNull();
+			listFinishedTasks.Tasks.Count.ShouldBeLessThan(100);
+			listFinishedTasks.Tasks.FirstOrDefault(item => item.TaskId == submitImageTask.TaskId).ShouldBeNull();
+		}
+
+		[Test]
+		public async Task GetApplicationInfo_ShouldBeOk()
+		{
+			// Act
+			var response = await ApiClient.GetApplicationInfoAsync();
+
+			// Assert
+			response.ShouldNotBeNull();
+			response.Id.ShouldBe(Config.ApplicationId);
 		}
 
 		private async Task<TaskInfo> SubmitImageAsync(string fileName, Guid? taskId = null)

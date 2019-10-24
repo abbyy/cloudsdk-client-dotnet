@@ -16,6 +16,7 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 		[Test]
 		public async Task ProcessImage_ShouldBeOk()
 		{
+			// Arrange
 			var parameters = new ImageProcessingParams
 			{
 				Language = "English",
@@ -25,6 +26,7 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 				},
 			};
 
+			// Act
 			TaskInfo processImageTask;
 			using (var fileStream = GetResourceFileStream(TestFile.Article))
 			{
@@ -36,25 +38,26 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 				);
 			}
 
-			processImageTask.ShouldNotBeNull();
-			processImageTask.TaskId.ShouldNotBe(Guid.Empty);
-			processImageTask.Status.ShouldBe(TaskStatus.Completed);
-			processImageTask.ResultUrls.Count.ShouldBe(1);
+			// Assert
+			CheckResultTask(processImageTask);
 		}
 
 		[Test]
 		public async Task SubmitImage_ShouldBeOk()
 		{
+			// Arrange and Act
 			var first = await SubmitImageAsync(TestFile.Article);
-			first.FilesCount.ShouldBe(1);
-
 			var second = await SubmitImageAsync(TestFile.Questionnaire, first.TaskId);
+
+			// Assert
+			first.FilesCount.ShouldBe(1);
 			second.FilesCount.ShouldBe(2);
 		}
 
 		[Test]
 		public async Task ProcessDocument_ShouldBeOk()
 		{
+			// Arrange
 			var submitImageTask = await SubmitImageAsync(TestFile.Article);
 			var parameters = new DocumentProcessingParams
 			{
@@ -63,29 +66,31 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 				ExportFormats = new[]
 				{
 					ExportFormat.PdfSearchable,
+					ExportFormat.Rtf,
 				},
 			};
 
+			// Act
 			var processDocumentTask = await ApiClient.ProcessDocumentAsync(
 				parameters,
 				true
 			);
 
-			processDocumentTask.ShouldNotBeNull();
-			processDocumentTask.TaskId.ShouldBe(submitImageTask.TaskId);
-			processDocumentTask.Status.ShouldBe(TaskStatus.Completed);
-			processDocumentTask.ResultUrls.Count.ShouldBe(1);
+			// Assert
+			CheckResultTask(processDocumentTask, submitImageTask.TaskId, 2);
 		}
 
 		[Test]
 		public async Task ProcessBusinessCard_ShouldBeOk()
 		{
+			// Arrange
 			var parameters = new BusinessCardProcessingParams
 			{
 				Language = "English",
 				ExportFormats = BusinessCardExportFormat.Xml,
 			};
 
+			// Act
 			TaskInfo processBusinessCardTask;
 			using (var fileStream = GetResourceFileStream(TestFile.BusinessCard))
 			{
@@ -97,21 +102,21 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 				);
 			}
 
-			processBusinessCardTask.ShouldNotBeNull();
-			processBusinessCardTask.TaskId.ShouldNotBe(Guid.Empty);
-			processBusinessCardTask.Status.ShouldBe(TaskStatus.Completed);
-			processBusinessCardTask.ResultUrls.Count.ShouldBe(1);
+			// Assert
+			CheckResultTask(processBusinessCardTask);
 		}
 
 		[Test]
 		public async Task ProcessTextField_ShouldBeOk()
 		{
+			// Arrange
 			var parameters = new TextFieldProcessingParams
 			{
 				Language = "English",
 				Region = "2000,2700,2600,2800",
 			};
 
+			// Act
 			TaskInfo processTextFieldTask;
 			using (var fileStream = GetResourceFileStream(TestFile.BusinessCard))
 			{
@@ -123,15 +128,14 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 				);
 			}
 
-			processTextFieldTask.ShouldNotBeNull();
-			processTextFieldTask.TaskId.ShouldNotBe(Guid.Empty);
-			processTextFieldTask.Status.ShouldBe(TaskStatus.Completed);
-			processTextFieldTask.ResultUrls.Count.ShouldBe(1);
+			// Assert
+			CheckResultTask(processTextFieldTask);
 		}
 
 		[Test]
 		public async Task ProcessBarcodeField_ShouldBeOk()
 		{
+			// Arrange
 			var parameters = new BarcodeFieldProcessingParams
 			{
 				BarcodeTypes = new[]
@@ -141,6 +145,7 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 				Region = "1800,3200,2250,3400",
 			};
 
+			// Act
 			TaskInfo processBarcodeFieldTask;
 			using (var fileStream = GetResourceFileStream(TestFile.Questionnaire))
 			{
@@ -152,21 +157,21 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 				);
 			}
 
-			processBarcodeFieldTask.ShouldNotBeNull();
-			processBarcodeFieldTask.TaskId.ShouldNotBe(Guid.Empty);
-			processBarcodeFieldTask.Status.ShouldBe(TaskStatus.Completed);
-			processBarcodeFieldTask.ResultUrls.Count.ShouldBe(1);
+			// Assert
+			CheckResultTask(processBarcodeFieldTask);
 		}
 
 		[Test]
 		public async Task ProcessCheckmarkField_ShouldBeOk()
 		{
+			// Arrange
 			var parameters = new CheckmarkFieldProcessingParams
 			{
 				CheckmarkType = CheckmarkType.Square,
 				Region = "700,930,800,1030",
 			};
 
+			// Act
 			TaskInfo processCheckmarkFieldTask;
 			using (var fileStream = GetResourceFileStream(TestFile.Questionnaire))
 			{
@@ -178,15 +183,14 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 				);
 			}
 
-			processCheckmarkFieldTask.ShouldNotBeNull();
-			processCheckmarkFieldTask.TaskId.ShouldNotBe(Guid.Empty);
-			processCheckmarkFieldTask.Status.ShouldBe(TaskStatus.Completed);
-			processCheckmarkFieldTask.ResultUrls.Count.ShouldBe(1);
+			// Assert
+			CheckResultTask(processCheckmarkFieldTask);
 		}
 
 		[Test]
 		public async Task ProcessFields_ShouldBeOk()
 		{
+			// Arrange
 			var submitImageTask = await SubmitImageAsync(TestFile.Questionnaire);
 			var parameters = new FieldsProcessingParams
 			{
@@ -194,6 +198,7 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 				WriteRecognitionVariants = true,
 			};
 
+			// Act
 			TaskInfo processFieldsTask;
 			using (var fileStream = GetResourceFileStream(TestFile.ProcessFieldsXmlConfig))
 			{
@@ -205,20 +210,20 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 				);
 			}
 
-			processFieldsTask.ShouldNotBeNull();
-			processFieldsTask.TaskId.ShouldBe(submitImageTask.TaskId);
-			processFieldsTask.Status.ShouldBe(TaskStatus.Completed);
-			processFieldsTask.ResultUrls.Count.ShouldBe(1);
+			// Assert
+			CheckResultTask(processFieldsTask, submitImageTask.TaskId);
 		}
 
 		[Test]
 		public async Task ProcessMrz_ShouldBeOk()
 		{
+			// Arrange
 			var parameters = new MrzProcessingParams
 			{
 				Description = "Task description: Mrz processing.",
 			};
 
+			// Act
 			TaskInfo processMrzTask;
 			using (var fileStream = GetResourceFileStream(TestFile.ProcessMrz))
 			{
@@ -230,15 +235,14 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 				);
 			}
 
-			processMrzTask.ShouldNotBeNull();
-			processMrzTask.TaskId.ShouldNotBe(Guid.Empty);
-			processMrzTask.Status.ShouldBe(TaskStatus.Completed);
-			processMrzTask.ResultUrls.Count.ShouldBe(1);
+			// Assert
+			CheckResultTask(processMrzTask);
 		}
 
 		[Test]
 		public async Task ProcessReceipt_ShouldBeOk()
 		{
+			// Arrange
 			var parameters = new ReceiptProcessingParams
 			{
 				Countries = new []
@@ -247,6 +251,7 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 				}
 			};
 
+			// Act
 			TaskInfo processReceiptTask;
 			using (var fileStream = GetResourceFileStream(TestFile.Article))
 			{
@@ -258,10 +263,8 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 				);
 			}
 
-			processReceiptTask.ShouldNotBeNull();
-			processReceiptTask.TaskId.ShouldNotBe(Guid.Empty);
-			processReceiptTask.Status.ShouldBe(TaskStatus.Completed);
-			processReceiptTask.ResultUrls.Count.ShouldBe(1);
+			// Assert
+			CheckResultTask(processReceiptTask);
 		}
 
 		private async Task<TaskInfo> SubmitImageAsync(string fileName, Guid? taskId = null)
@@ -290,6 +293,21 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 		private static FileStream GetResourceFileStream(string fileName)
 		{
 			return File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+		}
+
+		private static void CheckResultTask(TaskInfo resultTask, Guid? taskId = null, int resultUrls = 1)
+		{
+			resultTask.ShouldNotBeNull();
+
+			resultTask.TaskId.ShouldNotBe(Guid.Empty);
+			if (taskId.HasValue)
+			{
+				resultTask.TaskId.ShouldBe(taskId.Value);
+			}
+
+			resultTask.Status.ShouldBe(TaskStatus.Completed);
+
+			resultTask.ResultUrls.Count.ShouldBe(resultUrls);
 		}
 	}
 }

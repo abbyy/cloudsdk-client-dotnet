@@ -16,8 +16,6 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 		[Test]
 		public async Task ProcessImage_ShouldBeOk()
 		{
-			var fileName = TestFile.Article;
-
 			var parameters = new ImageProcessingParams
 			{
 				Language = "English",
@@ -28,12 +26,12 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 			};
 
 			TaskInfo processImageTask;
-			using (var fileStream = File.Open(fileName, FileMode.Open, FileAccess.Read))
+			using (var fileStream = File.Open(TestFile.Article, FileMode.Open, FileAccess.Read))
 			{
 				processImageTask = await ApiClient.ProcessImageAsync(
 					parameters,
 					fileStream,
-					fileName,
+					TestFile.Article,
 					true
 				);
 			}
@@ -42,6 +40,64 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 			processImageTask.TaskId.ShouldNotBe(Guid.Empty);
 			processImageTask.Status.ShouldBe(TaskStatus.Completed);
 			processImageTask.ResultUrls.Count.ShouldBe(1);
+		}
+
+		[Test]
+		public async Task SubmitImage_ShouldBeOk()
+		{
+			var first = await SubmitImageAsync(TestFile.Article);
+			first.FilesCount.ShouldBe(1);
+
+			var second = await SubmitImageAsync(TestFile.Questionnaire, first.TaskId);
+			second.FilesCount.ShouldBe(2);
+		}
+
+		[Test]
+		public async Task ProcessDocument_ShouldBeOk()
+		{
+			var submitImageTask = await SubmitImageAsync(TestFile.Article);
+			var parameters = new DocumentProcessingParams
+			{
+				TaskId = submitImageTask.TaskId,
+				Language = "English",
+				ExportFormats = new[]
+				{
+					ExportFormat.PdfSearchable,
+				},
+			};
+
+			var processDocumentTask = await ApiClient.ProcessDocumentAsync(
+				parameters,
+				true
+			);
+
+			processDocumentTask.ShouldNotBeNull();
+			processDocumentTask.TaskId.ShouldBe(submitImageTask.TaskId);
+			processDocumentTask.Status.ShouldBe(TaskStatus.Completed);
+			processDocumentTask.ResultUrls.Count.ShouldBe(1);
+		}
+
+		private async Task<TaskInfo> SubmitImageAsync(string fileName, Guid? taskId = null)
+		{
+			var parameters = taskId.HasValue
+				? new ImageSubmittingParams {TaskId = taskId.Value}
+				: null;
+
+			TaskInfo submitImageTask;
+			using (var fileStream = File.Open(fileName, FileMode.Open, FileAccess.Read))
+			{
+				submitImageTask = await ApiClient.SubmitImageAsync(
+					parameters,
+					fileStream,
+					fileName
+				);
+			}
+
+			submitImageTask.ShouldNotBeNull();
+			submitImageTask.TaskId.ShouldNotBe(Guid.Empty);
+			submitImageTask.Status.ShouldBe(TaskStatus.Submitted);
+
+			return submitImageTask;
 		}
 	}
 }

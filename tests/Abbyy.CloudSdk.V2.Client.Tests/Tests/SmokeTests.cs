@@ -211,6 +211,59 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 			processFieldsTask.ResultUrls.Count.ShouldBe(1);
 		}
 
+		[Test]
+		public async Task ProcessMrz_ShouldBeOk()
+		{
+			var parameters = new MrzProcessingParams
+			{
+				Description = "Task description: Mrz processing.",
+			};
+
+			TaskInfo processMrzTask;
+			using (var fileStream = GetResourceFileStream(TestFile.ProcessMrz))
+			{
+				processMrzTask = await ApiClient.ProcessMrzAsync(
+					parameters,
+					fileStream,
+					TestFile.ProcessMrz,
+					true
+				);
+			}
+
+			processMrzTask.ShouldNotBeNull();
+			processMrzTask.TaskId.ShouldNotBe(Guid.Empty);
+			processMrzTask.Status.ShouldBe(TaskStatus.Completed);
+			processMrzTask.ResultUrls.Count.ShouldBe(1);
+		}
+
+		[Test]
+		public async Task ProcessReceipt_ShouldBeOk()
+		{
+			var parameters = new ReceiptProcessingParams
+			{
+				Countries = new []
+				{
+					ReceiptRecognizingCountry.Russia,
+				}
+			};
+
+			TaskInfo processReceiptTask;
+			using (var fileStream = GetResourceFileStream(TestFile.Article))
+			{
+				processReceiptTask = await ApiClient.ProcessReceiptAsync(
+					parameters,
+					fileStream,
+					TestFile.Article,
+					true
+				);
+			}
+
+			processReceiptTask.ShouldNotBeNull();
+			processReceiptTask.TaskId.ShouldNotBe(Guid.Empty);
+			processReceiptTask.Status.ShouldBe(TaskStatus.Completed);
+			processReceiptTask.ResultUrls.Count.ShouldBe(1);
+		}
+
 		private async Task<TaskInfo> SubmitImageAsync(string fileName, Guid? taskId = null)
 		{
 			var parameters = taskId.HasValue

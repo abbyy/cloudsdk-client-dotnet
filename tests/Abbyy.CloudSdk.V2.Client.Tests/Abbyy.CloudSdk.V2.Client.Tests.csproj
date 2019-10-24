@@ -29,6 +29,9 @@
     <None Update="Resources\ProcessFieldsXmlConfig.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Resources\processMrz.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Resources\Questionnaire.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -1,0 +1,7 @@
+{
+  "TestConfig": {
+    "Host": "https://cloud-eu.ocrsdk.com",
+    "ApplicationId": "PASTE_APPLICATION_ID",
+    "Password": "PASTE_APPLICATION_PASSWORD"
+  }
+}

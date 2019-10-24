@@ -26,7 +26,7 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 			};
 
 			TaskInfo processImageTask;
-			using (var fileStream = File.Open(TestFile.Article, FileMode.Open, FileAccess.Read))
+			using (var fileStream = GetImageStream(TestFile.Article))
 			{
 				processImageTask = await ApiClient.ProcessImageAsync(
 					parameters,
@@ -87,7 +87,7 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 			};
 
 			TaskInfo processBusinessCardTask;
-			using (var fileStream = File.Open(TestFile.BusinessCard, FileMode.Open, FileAccess.Read))
+			using (var fileStream = GetImageStream(TestFile.BusinessCard))
 			{
 				processBusinessCardTask = await ApiClient.ProcessBusinessCardAsync(
 					parameters,
@@ -113,7 +113,7 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 			};
 
 			TaskInfo processTextFieldTask;
-			using (var fileStream = File.Open(TestFile.BusinessCard, FileMode.Open, FileAccess.Read))
+			using (var fileStream = GetImageStream(TestFile.BusinessCard))
 			{
 				processTextFieldTask = await ApiClient.ProcessTextFieldAsync(
 					parameters,
@@ -129,6 +129,61 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 			processTextFieldTask.ResultUrls.Count.ShouldBe(1);
 		}
 
+		[Test]
+		public async Task ProcessBarcodeField_ShouldBeOk()
+		{
+			var parameters = new BarcodeFieldProcessingParams
+			{
+				BarcodeTypes = new[]
+				{
+					BarcodeType.Ean13,
+				},
+				Region = "1800,3200,2250,3400",
+			};
+
+			TaskInfo processBarcodeFieldTask;
+			using (var fileStream = GetImageStream(TestFile.Questionnaire))
+			{
+				processBarcodeFieldTask = await ApiClient.ProcessBarcodeFieldAsync(
+					parameters,
+					fileStream,
+					TestFile.Questionnaire,
+					true
+				);
+			}
+
+			processBarcodeFieldTask.ShouldNotBeNull();
+			processBarcodeFieldTask.TaskId.ShouldNotBe(Guid.Empty);
+			processBarcodeFieldTask.Status.ShouldBe(TaskStatus.Completed);
+			processBarcodeFieldTask.ResultUrls.Count.ShouldBe(1);
+		}
+
+		[Test]
+		public async Task ProcessCheckmarkField_ShouldBeOk()
+		{
+			var parameters = new CheckmarkFieldProcessingParams
+			{
+				CheckmarkType = CheckmarkType.Square,
+				Region = "700,930,800,1030",
+			};
+
+			TaskInfo processCheckmarkFieldTask;
+			using (var fileStream = GetImageStream(TestFile.Questionnaire))
+			{
+				processCheckmarkFieldTask = await ApiClient.ProcessCheckmarkFieldAsync(
+					parameters,
+					fileStream,
+					TestFile.Questionnaire,
+					true
+				);
+			}
+
+			processCheckmarkFieldTask.ShouldNotBeNull();
+			processCheckmarkFieldTask.TaskId.ShouldNotBe(Guid.Empty);
+			processCheckmarkFieldTask.Status.ShouldBe(TaskStatus.Completed);
+			processCheckmarkFieldTask.ResultUrls.Count.ShouldBe(1);
+		}
+
 		private async Task<TaskInfo> SubmitImageAsync(string fileName, Guid? taskId = null)
 		{
 			var parameters = taskId.HasValue
@@ -136,7 +191,7 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 				: null;
 
 			TaskInfo submitImageTask;
-			using (var fileStream = File.Open(fileName, FileMode.Open, FileAccess.Read))
+			using (var fileStream = GetImageStream(fileName))
 			{
 				submitImageTask = await ApiClient.SubmitImageAsync(
 					parameters,
@@ -150,6 +205,11 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 			submitImageTask.Status.ShouldBe(TaskStatus.Submitted);
 
 			return submitImageTask;
+		}
+
+		private static FileStream GetImageStream(string fileName)
+		{
+			return File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
 		}
 	}
 }

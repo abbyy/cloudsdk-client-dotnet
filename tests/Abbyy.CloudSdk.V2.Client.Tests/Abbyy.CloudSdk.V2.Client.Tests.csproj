@@ -23,6 +23,9 @@
     <None Update="Images\Article.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Images\BusinessCard.tif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Images\Questionnaire.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

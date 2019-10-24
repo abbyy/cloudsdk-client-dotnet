@@ -77,6 +77,58 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 			processDocumentTask.ResultUrls.Count.ShouldBe(1);
 		}
 
+		[Test]
+		public async Task ProcessBusinessCard_ShouldBeOk()
+		{
+			var parameters = new BusinessCardProcessingParams
+			{
+				Language = "English",
+				ExportFormats = BusinessCardExportFormat.Xml,
+			};
+
+			TaskInfo processBusinessCardTask;
+			using (var fileStream = File.Open(TestFile.BusinessCard, FileMode.Open, FileAccess.Read))
+			{
+				processBusinessCardTask = await ApiClient.ProcessBusinessCardAsync(
+					parameters,
+					fileStream,
+					TestFile.BusinessCard,
+					true
+				);
+			}
+
+			processBusinessCardTask.ShouldNotBeNull();
+			processBusinessCardTask.TaskId.ShouldNotBe(Guid.Empty);
+			processBusinessCardTask.Status.ShouldBe(TaskStatus.Completed);
+			processBusinessCardTask.ResultUrls.Count.ShouldBe(1);
+		}
+
+		[Test]
+		public async Task ProcessTextField_ShouldBeOk()
+		{
+			var parameters = new TextFieldProcessingParams
+			{
+				Language = "English",
+				Region = "2000,2700,2600,2800",
+			};
+
+			TaskInfo processTextFieldTask;
+			using (var fileStream = File.Open(TestFile.BusinessCard, FileMode.Open, FileAccess.Read))
+			{
+				processTextFieldTask = await ApiClient.ProcessTextFieldAsync(
+					parameters,
+					fileStream,
+					TestFile.BusinessCard,
+					true
+				);
+			}
+
+			processTextFieldTask.ShouldNotBeNull();
+			processTextFieldTask.TaskId.ShouldNotBe(Guid.Empty);
+			processTextFieldTask.Status.ShouldBe(TaskStatus.Completed);
+			processTextFieldTask.ResultUrls.Count.ShouldBe(1);
+		}
+
 		private async Task<TaskInfo> SubmitImageAsync(string fileName, Guid? taskId = null)
 		{
 			var parameters = taskId.HasValue

@@ -322,7 +322,7 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 
 			// Assert
 			listTasks.ShouldNotBeNull();
-			listTasks.Tasks.Count.ShouldBeGreaterThan(1);
+			listTasks.Tasks.Count.ShouldBePositive();
 			listTasks.Tasks.FirstOrDefault(item => item.TaskId == submitImageTask.TaskId).ShouldNotBeNull();
 		}
 

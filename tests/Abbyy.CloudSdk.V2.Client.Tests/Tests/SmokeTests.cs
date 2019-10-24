@@ -267,6 +267,43 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 			CheckResultTask(processReceiptTask);
 		}
 
+		[Test]
+		public async Task GetTaskStatus_ShouldBeOk()
+		{
+			// Arrange
+			var submitImageTask = await SubmitImageAsync(TestFile.Article);
+
+			// Act
+			var resultTask = await ApiClient.GetTaskStatusAsync(submitImageTask.TaskId);
+
+			// Assert
+			resultTask.ShouldNotBeNull();
+			resultTask.TaskId.ShouldBe(submitImageTask.TaskId);
+			resultTask.Status.ShouldBe(TaskStatus.Submitted);
+		}
+
+		[Test]
+		public async Task DeleteTask_ShouldBeOk()
+		{
+			// Arrange
+			var submitImageTask = await SubmitImageAsync(TestFile.Article);
+
+			// Act
+			var deletedTask = await ApiClient.DeleteTaskAsync(submitImageTask.TaskId);
+			var resultTask = await ApiClient.GetTaskStatusAsync(deletedTask.TaskId);
+
+			// Assert
+			deletedTask.ShouldNotBeNull();
+			resultTask.ShouldNotBeNull();
+
+			deletedTask.TaskId.ShouldBe(submitImageTask.TaskId);
+			resultTask.TaskId.ShouldBe(deletedTask.TaskId);
+
+			submitImageTask.Status.ShouldBe(TaskStatus.Submitted);
+			deletedTask.Status.ShouldBe(TaskStatus.Deleted);
+			resultTask.Status.ShouldBe(TaskStatus.Deleted);
+		}
+
 		private async Task<TaskInfo> SubmitImageAsync(string fileName, Guid? taskId = null)
 		{
 			var parameters = taskId.HasValue
@@ -295,17 +332,15 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 			return File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
 		}
 
-		private static void CheckResultTask(TaskInfo resultTask, Guid? taskId = null, int resultUrls = 1)
+		private static void CheckResultTask(TaskInfo resultTask, Guid? taskId = null, int resultUrls = 1,
+			TaskStatus taskStatus = TaskStatus.Completed)
 		{
 			resultTask.ShouldNotBeNull();
 
 			resultTask.TaskId.ShouldNotBe(Guid.Empty);
-			if (taskId.HasValue)
-			{
-				resultTask.TaskId.ShouldBe(taskId.Value);
-			}
+			if (taskId.HasValue) resultTask.TaskId.ShouldBe(taskId.Value);
 
-			resultTask.Status.ShouldBe(TaskStatus.Completed);
+			resultTask.Status.ShouldBe(taskStatus);
 
 			resultTask.ResultUrls.Count.ShouldBe(resultUrls);
 		}

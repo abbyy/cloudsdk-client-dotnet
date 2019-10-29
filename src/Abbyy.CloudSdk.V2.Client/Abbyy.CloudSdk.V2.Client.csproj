@@ -1,10 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>net472;net461;net45;netstandard2.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <LangVersion>7.1</LangVersion>
-    <Version>1.0.1</Version>
+    <AssemblySemVer>1.0.1</AssemblySemVer>
+    <AssemblyFileVersion>$(AssemblySemVer)</AssemblyFileVersion>
+    <Version>$(AssemblySemVer)</Version>
+    <AssemblyVersion>$(AssemblyFileVersion).0</AssemblyVersion>
     <AssemblyName>Abbyy.CloudSdk.V2.Client</AssemblyName>
     <RootNamespace>Abbyy.CloudSdk.V2.Client</RootNamespace>
     <Description>ABBYY Cloud OCR SDK allows to recognize printed text (OCR) and hand-printed text (ICR) on images, convert image-only documents to searchable PDF or editable Microsoft Office formats, extract data from receipts, business cards and IDs through the simple HTTP API.

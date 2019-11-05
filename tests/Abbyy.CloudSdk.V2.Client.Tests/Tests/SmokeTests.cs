@@ -331,14 +331,30 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 		{
 			// Arrange
 			var submitImageTask = await SubmitImageAsync(TestFile.Article);
+			TaskInfo processImageTask;
+			using (var fileStream = GetResourceFileStream(TestFile.Article))
+			{
+				processImageTask = await ApiClient.ProcessImageAsync(
+					null,
+					fileStream,
+					TestFile.Article,
+					true
+				);
+			}
 
 			// Act
 			var listFinishedTasks = await ApiClient.ListFinishedTasksAsync();
 
 			// Assert
 			listFinishedTasks.ShouldNotBeNull();
-			listFinishedTasks.Tasks.Count.ShouldBeLessThan(100);
-			listFinishedTasks.Tasks.FirstOrDefault(item => item.TaskId == submitImageTask.TaskId).ShouldBeNull();
+
+			listFinishedTasks.Tasks.Count.ShouldBePositive();
+			listFinishedTasks.Tasks.Count.ShouldBeLessThanOrEqualTo(100);
+
+			listFinishedTasks.Tasks.FirstOrDefault(
+				item => item.TaskId == submitImageTask.TaskId).ShouldBeNull();
+			listFinishedTasks.Tasks.FirstOrDefault(
+				item => item.TaskId == processImageTask.TaskId).ShouldNotBeNull();
 		}
 
 		[Test]

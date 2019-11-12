@@ -20,10 +20,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Resources\Article.jpg">
+    <None Update="Resources\processImage.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\BusinessCard.tif">
+    <None Update="Resources\processBusinessCard.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Resources\ProcessFieldsXmlConfig.xml">
@@ -32,7 +32,7 @@
     <None Update="Resources\processMrz.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Questionnaire.pdf">
+    <None Update="Resources\processFields.tif">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="testsettings.json">

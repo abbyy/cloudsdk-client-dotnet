@@ -4,10 +4,10 @@ namespace Abbyy.CloudSdk.V2.Client.Tests
 	{
 		private const string Prefix = "Resources/";
 
-		public const string Article = Prefix + "Article.jpg";
-		public const string BusinessCard = Prefix + "BusinessCard.tif";
+		public const string Image = Prefix + "processImage.jpg";
+		public const string BusinessCard = Prefix + "processBusinessCard.jpg";
 		public const string ProcessFieldsXmlConfig = Prefix + "ProcessFieldsXmlConfig.xml";
-		public const string ProcessMrz = Prefix + "processMrz.jpg";
-		public const string Questionnaire = Prefix + "Questionnaire.pdf";
+		public const string Mrz = Prefix + "processMrz.jpg";
+		public const string Fields = Prefix + "processFields.tif";
 	}
 }

@@ -29,12 +29,12 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 
 			// Act
 			TaskInfo processImageTask;
-			using (var fileStream = GetResourceFileStream(TestFile.Article))
+			using (var fileStream = GetResourceFileStream(TestFile.Image))
 			{
 				processImageTask = await ApiClient.ProcessImageAsync(
 					parameters,
 					fileStream,
-					TestFile.Article,
+					TestFile.Image,
 					true
 				);
 			}
@@ -47,8 +47,8 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 		public async Task SubmitImage_ShouldBeOk()
 		{
 			// Arrange and Act
-			var first = await SubmitImageAsync(TestFile.Article);
-			var second = await SubmitImageAsync(TestFile.Questionnaire, first.TaskId);
+			var first = await SubmitImageAsync(TestFile.Image);
+			var second = await SubmitImageAsync(TestFile.Fields, first.TaskId);
 
 			// Assert
 			first.FilesCount.ShouldBe(1);
@@ -59,7 +59,7 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 		public async Task ProcessDocument_ShouldBeOk()
 		{
 			// Arrange
-			var submitImageTask = await SubmitImageAsync(TestFile.Article);
+			var submitImageTask = await SubmitImageAsync(TestFile.Image);
 			var parameters = new DocumentProcessingParams
 			{
 				TaskId = submitImageTask.TaskId,
@@ -114,7 +114,7 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 			var parameters = new TextFieldProcessingParams
 			{
 				Language = "English",
-				Region = "2000,2700,2600,2800",
+				Region = "140,550,1130,700",
 			};
 
 			// Act
@@ -148,12 +148,12 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 
 			// Act
 			TaskInfo processBarcodeFieldTask;
-			using (var fileStream = GetResourceFileStream(TestFile.Questionnaire))
+			using (var fileStream = GetResourceFileStream(TestFile.Fields))
 			{
 				processBarcodeFieldTask = await ApiClient.ProcessBarcodeFieldAsync(
 					parameters,
 					fileStream,
-					TestFile.Questionnaire,
+					TestFile.Fields,
 					true
 				);
 			}
@@ -174,12 +174,12 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 
 			// Act
 			TaskInfo processCheckmarkFieldTask;
-			using (var fileStream = GetResourceFileStream(TestFile.Questionnaire))
+			using (var fileStream = GetResourceFileStream(TestFile.Fields))
 			{
 				processCheckmarkFieldTask = await ApiClient.ProcessCheckmarkFieldAsync(
 					parameters,
 					fileStream,
-					TestFile.Questionnaire,
+					TestFile.Fields,
 					true
 				);
 			}
@@ -192,7 +192,7 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 		public async Task ProcessFields_ShouldBeOk()
 		{
 			// Arrange
-			var submitImageTask = await SubmitImageAsync(TestFile.Questionnaire);
+			var submitImageTask = await SubmitImageAsync(TestFile.Fields);
 			var parameters = new FieldsProcessingParams
 			{
 				TaskId = submitImageTask.TaskId,
@@ -226,12 +226,12 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 
 			// Act
 			TaskInfo processMrzTask;
-			using (var fileStream = GetResourceFileStream(TestFile.ProcessMrz))
+			using (var fileStream = GetResourceFileStream(TestFile.Mrz))
 			{
 				processMrzTask = await ApiClient.ProcessMrzAsync(
 					parameters,
 					fileStream,
-					TestFile.ProcessMrz,
+					TestFile.Mrz,
 					true
 				);
 			}
@@ -254,12 +254,12 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 
 			// Act
 			TaskInfo processReceiptTask;
-			using (var fileStream = GetResourceFileStream(TestFile.Article))
+			using (var fileStream = GetResourceFileStream(TestFile.Image))
 			{
 				processReceiptTask = await ApiClient.ProcessReceiptAsync(
 					parameters,
 					fileStream,
-					TestFile.Article,
+					TestFile.Image,
 					true
 				);
 			}
@@ -272,7 +272,7 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 		public async Task GetTaskStatus_ShouldBeOk()
 		{
 			// Arrange
-			var submitImageTask = await SubmitImageAsync(TestFile.Article);
+			var submitImageTask = await SubmitImageAsync(TestFile.Image);
 
 			// Act
 			var resultTask = await ApiClient.GetTaskStatusAsync(submitImageTask.TaskId);
@@ -287,7 +287,7 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 		public async Task DeleteTask_ShouldBeOk()
 		{
 			// Arrange
-			var submitImageTask = await SubmitImageAsync(TestFile.Article);
+			var submitImageTask = await SubmitImageAsync(TestFile.Image);
 
 			// Act
 			var deletedTask = await ApiClient.DeleteTaskAsync(submitImageTask.TaskId);
@@ -309,7 +309,7 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 		public async Task ListTasks_ShouldBeOk()
 		{
 			// Arrange
-			var submitImageTask = await SubmitImageAsync(TestFile.Article);
+			var submitImageTask = await SubmitImageAsync(TestFile.Image);
 			var parameters = new TasksListingParams
 			{
 				ExcludeDeleted = true,
@@ -330,14 +330,14 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 		public async Task ListFinishedTasks_ShouldBeOk()
 		{
 			// Arrange
-			var submitImageTask = await SubmitImageAsync(TestFile.Article);
+			var submitImageTask = await SubmitImageAsync(TestFile.Image);
 			TaskInfo processImageTask;
-			using (var fileStream = GetResourceFileStream(TestFile.Article))
+			using (var fileStream = GetResourceFileStream(TestFile.Image))
 			{
 				processImageTask = await ApiClient.ProcessImageAsync(
 					null,
 					fileStream,
-					TestFile.Article,
+					TestFile.Image,
 					true
 				);
 			}

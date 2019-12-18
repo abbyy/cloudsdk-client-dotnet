@@ -72,32 +72,11 @@ namespace Abbyy.CloudSdk.V2.Client.Utils
 
 			foreach (var element in collection)
 			{
-				var elementType = element.GetType();
 				var value = element.ToString();
-
-				if (elementType.IsEnum)
-				{
-					value = GetEnumValue(elementType, value);
-				}
-
 				values.Add(value);
 			}
 
 			return string.Join(",", values);
-		}
-
-		private static string GetEnumValue(Type enumType, string value)
-		{
-			var memberInfo = enumType.GetMember(value);
-
-			var attribute = memberInfo[0]
-				.GetCustomAttribute(typeof(JsonPropertyAttribute)) as JsonPropertyAttribute;
-
-			var actualValue = attribute is null ?
-				char.ToLowerInvariant(value[0]) + value.Substring(1) :
-				attribute.PropertyName;
-
-			return actualValue;
 		}
 
 		private static string GetPropertyName(PropertyInfo prop)

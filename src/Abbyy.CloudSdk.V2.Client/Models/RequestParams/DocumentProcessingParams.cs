@@ -119,5 +119,24 @@ namespace Abbyy.CloudSdk.V2.Client.Models.RequestParams
 		/// Optional. Default "true". Specifies whether the skew of the image should be automatically detected and corrected.
 		/// </summary>
 		public bool? CorrectSkew { get; set; }
+
+		/// <summary>
+		/// Optional. Default "false". Specifies whether each paragraph in the
+		/// recognized text is exported as one line.
+		/// This parameter can be used only if the <see cref="ExportFormat"/> parameter
+		/// is set to txtUnstructured value.
+		/// </summary>
+		/// <list type="bullet">
+		/// <item>
+		/// <term>false</term>
+		/// <description>Line breaks between lines of the paragraph are kept as in the original document.</description>
+		/// </item>
+		/// <item>
+		/// <term>true</term>
+		/// <description>The whole text of the paragraph is exported as one line, line breaks are removed.</description>
+		/// </item>
+		/// </list>
+		[JsonProperty(PropertyName = "txtUnstructured:paragraphAsOneLine")]
+		public bool? ExportParagraphAsOneLine { get; set; }
 	}
 }

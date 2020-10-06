@@ -101,6 +101,14 @@ namespace Abbyy.CloudSdk.V2.Client.Models.RequestParams
 		public bool? WriteRecognitionVariants { get; set; }
 
 		/// <summary>
+		/// Optional. Default "false". Specifies whether collections of variants of words recognition
+		/// should be written to an output file in XML format. This parameter can be used only
+		/// if the <see cref="ExportFormat"/> parameter contains xml or xmlForCorrectedImage value. 
+		/// </summary>
+		[JsonProperty(PropertyName = "xml:writeWordRecognitionVariants")]
+		public bool? WriteWordRecognitionVariants { get; set; }
+
+		/// <summary>
 		/// Optional. Default "false". Specifies whether the paragraph and character styles
 		/// should be written to an output file in XML format. This parameter can be
 		/// used only if the <see cref="ExportFormat"/> parameter contains xml or

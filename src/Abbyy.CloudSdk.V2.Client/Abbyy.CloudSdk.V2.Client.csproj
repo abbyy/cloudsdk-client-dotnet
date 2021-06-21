@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>net472;net461;net45;netstandard2.0</TargetFrameworks>
@@ -10,7 +10,7 @@
     <AssemblyVersion>$(AssemblyFileVersion).0</AssemblyVersion>
     <AssemblyName>Abbyy.CloudSdk.V2.Client</AssemblyName>
     <RootNamespace>Abbyy.CloudSdk.V2.Client</RootNamespace>
-    <Description>ABBYY Cloud OCR SDK allows to recognize printed text (OCR) and hand-printed text (ICR) on images, convert image-only documents to searchable PDF or editable Microsoft Office formats, extract data from receipts, business cards and IDs through the simple HTTP API.
+    <Description>ABBYY Cloud OCR SDK allows to recognize printed text (OCR) and hand-printed text (ICR) on images, convert image-only documents to searchable PDF or editable Microsoft Office formats, extract data from business cards and IDs through the simple HTTP API.
 
 This .NET library provides classes and methods to access ABBYY Cloud OCR SDK API endpoints.
     </Description>

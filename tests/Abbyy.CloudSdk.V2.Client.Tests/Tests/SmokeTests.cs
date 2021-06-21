@@ -241,34 +241,6 @@ namespace Abbyy.CloudSdk.V2.Client.Tests.Tests
 		}
 
 		[Test]
-		public async Task ProcessReceipt_ShouldBeOk()
-		{
-			// Arrange
-			var parameters = new ReceiptProcessingParams
-			{
-				Countries = new []
-				{
-					ReceiptRecognizingCountry.Russia,
-				}
-			};
-
-			// Act
-			TaskInfo processReceiptTask;
-			using (var fileStream = GetResourceFileStream(TestFile.Image))
-			{
-				processReceiptTask = await ApiClient.ProcessReceiptAsync(
-					parameters,
-					fileStream,
-					TestFile.Image,
-					true
-				);
-			}
-
-			// Assert
-			CheckResultTask(processReceiptTask);
-		}
-
-		[Test]
 		public async Task GetTaskStatus_ShouldBeOk()
 		{
 			// Arrange

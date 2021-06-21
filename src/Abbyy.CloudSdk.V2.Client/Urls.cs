@@ -29,7 +29,6 @@ namespace Abbyy.CloudSdk.V2.Client
 			public const string ProcessTextField = "v2/processTextField";
 			public const string ProcessFields = "v2/processFields";
 			public const string ProcessBusinessCard = "v2/processBusinessCard";
-			public const string ProcessReceipt = "v2/processReceipt";
 			public const string ProcessMrz = "v2/processMRZ";
 			public const string GetApplicationInfo = "v2/getApplicationInfo";
 			public const string ListTasks = "v2/listTasks";

@@ -178,26 +178,6 @@ namespace Abbyy.CloudSdk.V2.Client
 		Task<TaskInfo> ProcessMrzAsync(MrzProcessingParams parameters, Stream fileStream, string fileName, bool waitTaskFinished = false, CancellationToken cancellationToken = default);
 
 		/// <summary>
-		/// Important: the technology fully supports the receipts issued in USA and France, other countries are currently supported in beta mode.
-		/// The method allows you to recognize the image of a receipt.The method loads the image, creates a processing task for the image with the
-		/// specified parameters, and passes the task for processing. The result is returned in XML format.
-		/// </summary>
-		/// <remarks>
-		/// The elements and attributes of the resulting file are described in
-		/// <see href="https://www.ocrsdk.com/documentation/specifications/xml-scheme-recognized-receipt/">Output XML with Receipt Data</see>.
-		/// For a step-by-step guide, see <see href="https://www.ocrsdk.com/documentation/quick-start-guide/receipt-recognition/">How to Recognize
-		/// Receipts.</see> The recommendations on preparing the input images can be found in
-		/// <see href="https://www.ocrsdk.com/documentation/hints-tips/photograph-scan-receipts/">Photographing and Scanning Receipts</see>.
-		/// </remarks>
-		/// <param name="parameters">Receipt processing parameters</param>
-		/// <param name="fileStream">Stream of the file with the image to be recognized</param>
-		/// <param name="fileName">Name of the file with the image</param>
-		/// <param name="waitTaskFinished">Indicates whether to wait until task is finished.</param>
-		/// <param name="cancellationToken">Cancellation token of the request</param>
-		/// <returns><see cref="TaskInfo"/></returns>
-		Task<TaskInfo> ProcessReceiptAsync(ReceiptProcessingParams parameters, Stream fileStream, string fileName, bool waitTaskFinished = false, CancellationToken cancellationToken = default);
-
-		/// <summary>
 		/// The method returns the current status of the task and the URL of the result of processing for completed tasks.
 		/// Please note that the task status is not changed momentarily. Do not call this method more frequently than once in 2 or 3 seconds.
 		/// </summary>

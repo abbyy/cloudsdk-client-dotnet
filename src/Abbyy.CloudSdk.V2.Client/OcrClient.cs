@@ -255,24 +255,6 @@ namespace Abbyy.CloudSdk.V2.Client
 		}
 
 		/// <inheritdoc />
-		public Task<TaskInfo> ProcessReceiptAsync(
-			ReceiptProcessingParams parameters,
-			Stream fileStream,
-			string fileName,
-			bool waitTaskFinished = false,
-			CancellationToken cancellationToken = default)
-		{
-			return StartTaskAsync(
-				HttpMethod.Post, 
-				Urls.Ocr.ProcessReceipt,
-				parameters,
-				fileStream,
-				fileName,
-				waitTaskFinished,
-				cancellationToken);
-		}
-
-		/// <inheritdoc />
 		public Task<TaskInfo> ProcessMrzAsync(
 			MrzProcessingParams parameters,
 			Stream fileStream,
